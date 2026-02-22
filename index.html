@@ -681,8 +681,8 @@ const SAMPLE=[
   {id:6, title:"כניסה לכושר",      nickname:"חודש נסיון 💪",      merchant:"Holmes Place", category:"ספורט", code:"HP-TRIAL-30",   value:"₪150",expiryDate:"2026-02-25",link:"",notes:"",image:"",used:false,tags:["בריאות"],    createdAt:"2026-01-10"},
 ];
 
-let vouchers = JSON.parse(localStorage.getItem('vch_v5'))||SAMPLE;
-let settings = JSON.parse(localStorage.getItem('set_v5'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
+let vouchers = JSON.parse(localStorage.getItem('vch_v6'))||SAMPLE;
+let settings = JSON.parse(localStorage.getItem('set_v6'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
 // Defaults: show unused active, sorted by expiry
 let activeCat="הכל";
 let filter="unused";   // default: show only active unused
@@ -692,8 +692,8 @@ let pendingImage="";
 let editingId=null;    // null=add mode, number=edit mode
 
 const save=()=>{
-  localStorage.setItem('vch_v5',JSON.stringify(vouchers));
-  localStorage.setItem('set_v5',JSON.stringify(settings));
+  localStorage.setItem('vch_v6',JSON.stringify(vouchers));
+  localStorage.setItem('set_v6',JSON.stringify(settings));
 };
 
 const daysUntil=d=>{
