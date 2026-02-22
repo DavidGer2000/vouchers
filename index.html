@@ -121,7 +121,7 @@ html,body{
 .card-wrapper{position:relative;margin-bottom:10px;overflow:hidden;border-radius:20px;}
 .card-used-bg{
   position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(90deg,#00D4AA,#00B894);
+  background:linear-gradient(90deg,#FF4757,#FF6B6B);
   display:flex;align-items:center;justify-content:flex-start;
   padding-left:24px;border-radius:20px;pointer-events:none;
 }
@@ -488,7 +488,7 @@ html,body{
       <div class="filter-pill" data-filter="all">הכל</div>
       <div class="filter-pill active" data-filter="unused">פעילים</div>
       <div class="filter-pill" data-filter="expiring">פגים בקרוב</div>
-      <div class="filter-pill" data-filter="used">ממושים</div>
+      <div class="filter-pill" data-filter="used">ממומשים</div>
       <div class="filter-pill" data-filter="expired">פגי תוקף</div>
     </div>
 
@@ -623,7 +623,7 @@ html,body{
     <div class="settings-section">
       <div class="settings-title">🗑 מחיקה אוטומטית</div>
       <div class="settings-row">
-        <div><div class="settings-row-label">מחק שוברים ממושים אוטומטית</div><div class="settings-row-sub">הסר שוברים מומשים בפתיחת האפליקציה</div></div>
+        <div><div class="settings-row-label">מחק שוברים ממומשים אוטומטית</div><div class="settings-row-sub">הסר שוברים מומשים בפתיחת האפליקציה</div></div>
         <div class="toggle" id="auto-del-used-toggle"></div>
       </div>
       <div class="settings-row">
@@ -635,7 +635,7 @@ html,body{
     <div class="settings-section">
       <div class="settings-title">🧹 ניקוי ידני</div>
       <div class="settings-row" id="clear-used-btn" style="cursor:pointer;">
-        <div><div class="settings-row-label">מחק עכשיו: שוברים ממושים</div><div class="settings-row-sub" id="used-count-sub"></div></div>
+        <div><div class="settings-row-label">מחק עכשיו: שוברים ממומשים</div><div class="settings-row-sub" id="used-count-sub"></div></div>
         <span style="color:var(--text2);font-size:18px;">›</span>
       </div>
       <div class="settings-row" id="clear-expired-btn" style="cursor:pointer;">
@@ -681,8 +681,8 @@ const SAMPLE=[
   {id:6, title:"כניסה לכושר",      nickname:"חודש נסיון 💪",      merchant:"Holmes Place", category:"ספורט", code:"HP-TRIAL-30",   value:"₪150",expiryDate:"2026-02-25",link:"",notes:"",image:"",used:false,tags:["בריאות"],    createdAt:"2026-01-10"},
 ];
 
-let vouchers = JSON.parse(localStorage.getItem('vch_v6'))||SAMPLE;
-let settings = JSON.parse(localStorage.getItem('set_v6'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
+let vouchers = JSON.parse(localStorage.getItem('vch_v7'))||SAMPLE;
+let settings = JSON.parse(localStorage.getItem('set_v7'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
 // Defaults: show unused active, sorted by expiry
 let activeCat="הכל";
 let filter="unused";   // default: show only active unused
@@ -692,8 +692,8 @@ let pendingImage="";
 let editingId=null;    // null=add mode, number=edit mode
 
 const save=()=>{
-  localStorage.setItem('vch_v6',JSON.stringify(vouchers));
-  localStorage.setItem('set_v6',JSON.stringify(settings));
+  localStorage.setItem('vch_v7',JSON.stringify(vouchers));
+  localStorage.setItem('set_v7',JSON.stringify(settings));
 };
 
 const daysUntil=d=>{
@@ -798,7 +798,7 @@ const renderHome=()=>{
   // Filter
   let list=vouchers.filter(v=>{
     if(activeCat!=='הכל'&&v.category!==activeCat) return false;
-    if(filter==='unused'&&v.used) return false;
+    if(filter==='unused'&&(v.used || (v.expiryDate && daysUntil(v.expiryDate)<=0))) return false;
     if(filter==='used'&&!v.used) return false;
     if(filter==='expired'&&(v.used || !v.expiryDate || daysUntil(v.expiryDate)>0)) return false;
     if(filter==='expiring'&&(v.used||!v.expiryDate||daysUntil(v.expiryDate)>settings.alertDays||daysUntil(v.expiryDate)<=0)) return false;
@@ -831,7 +831,7 @@ const renderHome=()=>{
       : `<span class="expiry-badge" style="color:${b.color};background:${b.bg};border:1px solid ${b.border};">${b.label}</span>`;
     return `
       <div class="card-wrapper" data-id="${v.id}">
-        <div class="card-used-bg"><span>✅</span></div>
+        <div class="card-used-bg"><span>🗑</span></div>
         <div class="voucher-card ${isActive?'active':'inactive'} ${v.image?'has-thumb':''}" data-id="${v.id}">
           <div class="card-actions">
             <button class="card-action-btn edit-btn" data-id="${v.id}" title="ערוך">✏️</button>
@@ -1162,13 +1162,13 @@ const renderSettings=()=>{
     <div class="stat-card"><div class="stat-num">${vouchers.length}</div><div class="stat-label">סה"כ שוברים</div></div>
     <div class="stat-card"><div class="stat-num" style="color:#00D4AA;">${active}</div><div class="stat-label">פעילים</div></div>
     <div class="stat-card"><div class="stat-num" style="color:#f97316;">${expiring}</div><div class="stat-label">פגים בקרוב</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:#6b7280;">${used}</div><div class="stat-label">ממושים</div></div>`;
+    <div class="stat-card"><div class="stat-num" style="color:#6b7280;">${used}</div><div class="stat-label">ממומשים</div></div>`;
 
   document.getElementById('notif-toggle').className=`toggle ${settings.notif?'on':''}`;
   document.getElementById('days-input').value=settings.alertDays;
   document.getElementById('auto-del-used-toggle').className=`toggle ${settings.autoDelUsed?'on':''}`;
   document.getElementById('auto-del-expired-toggle').className=`toggle ${settings.autoDelExpired?'on':''}`;
-  document.getElementById('used-count-sub').textContent=used?`${used} שובר/ים ממושים`:'אין שוברים ממושים';
+  document.getElementById('used-count-sub').textContent=used?`${used} שובר/ים ממומשים`:'אין שוברים ממומשים';
   document.getElementById('expired-count-sub').textContent=expired?`${expired} שובר/ים פגי תוקף`:'אין שוברים פגי תוקף';
 };
 
@@ -1179,8 +1179,8 @@ document.getElementById('auto-del-expired-toggle').addEventListener('click',func
 
 document.getElementById('clear-used-btn').addEventListener('click',()=>{
   const n=vouchers.filter(v=>v.used).length;
-  if(!n){toast('אין שוברים ממושים');return;}
-  if(confirm(`למחוק ${n} שובר/ים ממושים?`)){vouchers=vouchers.filter(v=>!v.used);save();renderHome();renderSettings();toast(`🗑 נמחקו ${n} שוברים`);}
+  if(!n){toast('אין שוברים ממומשים');return;}
+  if(confirm(`למחוק ${n} שובר/ים ממומשים?`)){vouchers=vouchers.filter(v=>!v.used);save();renderHome();renderSettings();toast(`🗑 נמחקו ${n} שוברים`);}
 });
 document.getElementById('clear-expired-btn').addEventListener('click',()=>{
   const n=vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=0).length;
