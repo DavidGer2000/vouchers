@@ -117,864 +117,1020 @@ html,body{
 
 .cards-container{padding:12px 16px calc(var(--nav-h) + var(--safe-b) + 20px);}
 
-/* ===================== CARDS ===================== */
-.card-wrapper{position:relative;margin-bottom:10px;overflow:hidden;border-radius:20px;}
-.card-delete-bg{
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(90deg,#FF4757,#FF6B6B);
-  display:flex;align-items:center;justify-content:flex-start;
-  padding-left:24px;border-radius:20px;pointer-events:none;
+/* ===================== CARDS with swipe gestures ===================== */
+.card-wrapper{position:relative;margin-bottom:10px;overflow:visible;border-radius:20px;}
+.card-swipe-actions{
+  position:absolute;top:0;width:100%;height:100%;
+  display:flex;align-items:center;border-radius:20px;
+  pointer-events:none;overflow:hidden;
 }
-.card-delete-bg span{font-size:26px;}
+.swipe-action-left{
+  position:absolute;right:0;width:80px;height:100%;
+  background:linear-gradient(90deg,#00D4AA,#00E5BB);
+  display:flex;align-items:center;justify-content:flex-end;
+  padding-right:20px;border-radius:20px;
+}
+.swipe-action-right{
+  position:absolute;left:0;width:80px;height:100%;
+  background:linear-gradient(90deg,#7C6FFF,#9C8FFF);
+  display:flex;align-items:center;justify-content:flex-start;
+  padding-left:20px;border-radius:20px;
+}
+.swipe-action-left span, .swipe-action-right span{font-size:24px;}
 
 .voucher-card{
   background:var(--surface);border:1.5px solid var(--border);
-  border-radius:20px;padding:12px 14px 12px 52px;
+  border-radius:20px;padding:14px 16px;
   cursor:pointer;position:relative;overflow:hidden;
   -webkit-user-select:none;user-select:none;
   touch-action:pan-y;will-change:transform;transition:background 0.2s;
 }
 .voucher-card:active{background:var(--surface2);}
-.voucher-card.has-thumb{padding-right:68px;}
+.voucher-card.has-thumb{padding-right:70px;}
 
 /* USED card — grey, no red */
 .voucher-card.used{ opacity:0.55; filter:grayscale(60%); }
 
-.card-stripe{position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 20px 20px 0;}
-
-/* Two action buttons on left side of card */
-.card-actions{
-  position:absolute;top:50%;left:6px;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:5px;z-index:5;
-}
-.card-action-btn{
-  width:34px;height:34px;border-radius:10px;border:1.5px solid;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;cursor:pointer;transition:all 0.15s;opacity:0.45;background:none;
-}
-.card-action-btn:active{transform:scale(0.88);}
-.card-action-btn.edit-btn{border-color:rgba(124,111,255,0.35);color:#9C8FFF;}
-.card-action-btn.edit-btn:hover{opacity:1;background:rgba(124,111,255,0.15);}
-.card-action-btn.del-btn{border-color:rgba(255,71,87,0.35);color:#FF4757;}
-.card-action-btn.del-btn:hover{opacity:1;background:rgba(255,71,87,0.12);}
-@media(hover:none){.card-action-btn{opacity:0.35;}}
+/* Removed card stripe entirely */
 
 .card-thumb{
-  width:44px;height:44px;border-radius:10px;object-fit:cover;
-  position:absolute;top:50%;right:14px;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:12px;object-fit:cover;
+  position:absolute;top:50%;right:16px;transform:translateY(-50%);
   border:1px solid var(--border);
 }
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.card-left{flex:1;min-width:0;}
-.card-cat-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;
-  margin-bottom:5px;background:rgba(255,255,255,0.07);
-}
-.card-cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.card-nickname{font-size:12px;color:var(--accent2);font-style:italic;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-title{font-size:15px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-merchant{font-size:12px;color:var(--text2);}
-.card-value{font-size:22px;font-weight:900;line-height:1;text-align:left;flex-shrink:0;margin-right:8px;}
-.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.expiry-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
 
-/* Used badge — soft teal, no red */
-.badge-used{background:rgba(144,144,176,0.1);border:1px solid rgba(144,144,176,0.2);color:#9090B0;}
+.card-body{display:flex;flex-direction:column;gap:7px;}
 
-.copy-btn-inline{
-  background:rgba(124,111,255,0.15);border:1px solid rgba(124,111,255,0.25);
-  border-radius:8px;padding:5px 10px;color:#9C8FFF;font-size:11px;font-weight:700;
-  cursor:pointer;font-family:monospace;white-space:nowrap;
-  max-width:130px;overflow:hidden;text-overflow:ellipsis;transition:all 0.15s;flex-shrink:0;
+.card-top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.card-title{font-size:16px;font-weight:700;line-height:1.3;flex:1;word-break:break-word;}
+
+.card-badge-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.card-badge{
+  padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600;
+  border:1px solid;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
 }
-.copy-btn-inline:hover,.copy-btn-inline:active{background:rgba(124,111,255,0.3);}
-.copy-btn-inline.copied{background:rgba(0,212,170,0.15);border-color:rgba(0,212,170,0.3);color:#00D4AA;}
-.tags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.tag{background:rgba(124,111,255,0.15);border:1px solid rgba(124,111,255,0.25);border-radius:20px;padding:2px 8px;font-size:10px;color:#9C8FFF;font-weight:600;}
-.empty-state{text-align:center;padding:80px 20px;color:var(--text2);}
-.empty-state .emoji{font-size:56px;display:block;margin-bottom:16px;}
-.empty-state h3{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text);}
+.card-badge.expiry{border-color:rgba(255,159,64,0.4);background:rgba(255,159,64,0.1);color:#FF9F40;}
+.card-badge.soon{border-color:rgba(255,107,157,0.5);background:rgba(255,107,157,0.15);color:#FF6B9D;}
+.card-badge.expired{border-color:rgba(107,114,128,0.4);background:rgba(107,114,128,0.12);color:#9CA3AF;}
+.card-badge.value{border-color:rgba(0,212,170,0.4);background:rgba(0,212,170,0.1);color:#00D4AA;}
+
+.card-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text2);margin-top:2px;}
+.card-meta span{display:flex;align-items:center;gap:4px;}
+
+/* Link button in card */
+.card-link-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:10px;
+  background:rgba(124,111,255,0.12);border:1.5px solid rgba(124,111,255,0.3);
+  color:#9C8FFF;font-size:12px;font-weight:600;
+  text-decoration:none;margin-top:4px;
+  transition:all 0.2s;
+}
+.card-link-btn:hover{background:rgba(124,111,255,0.2);border-color:rgba(124,111,255,0.5);}
+.card-link-btn:active{transform:scale(0.96);}
+
+/* Modern edit button */
+.card-edit-btn{
+  position:absolute;top:12px;left:12px;
+  width:32px;height:32px;border-radius:10px;
+  background:rgba(124,111,255,0.15);
+  border:1.5px solid rgba(124,111,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#9C8FFF;cursor:pointer;
+  transition:all 0.2s;z-index:10;
+  backdrop-filter:blur(10px);
+}
+.card-edit-btn:hover{
+  background:rgba(124,111,255,0.25);
+  border-color:rgba(124,111,255,0.5);
+  transform:scale(1.05);
+}
+.card-edit-btn:active{transform:scale(0.92);}
+
+.empty-state{
+  padding:60px 30px;text-align:center;display:flex;flex-direction:column;
+  align-items:center;gap:16px;
+}
+.empty-emoji{font-size:64px;}
+.empty-text{font-size:18px;font-weight:600;color:var(--text2);line-height:1.4;}
+.empty-btn{
+  margin-top:10px;padding:12px 24px;background:var(--accent);color:#fff;
+  border:none;border-radius:var(--radius);font-size:15px;font-weight:700;
+  font-family:'Heebo';cursor:pointer;transition:all 0.2s;
+}
+.empty-btn:active{transform:scale(0.95);}
 
 /* ===================== BOTTOM NAV ===================== */
 .bottom-nav{
-  display:flex;align-items:center;justify-content:space-around;
   background:var(--surface);border-top:1px solid var(--border);
   height:var(--nav-h);padding-bottom:var(--safe-b);
-  flex-shrink:0;position:relative;z-index:20;
+  display:flex;align-items:center;justify-content:space-around;
+  flex-shrink:0;position:relative;z-index:100;
 }
 .nav-item{
   display:flex;flex-direction:column;align-items:center;gap:4px;
-  cursor:pointer;padding:10px 20px;border-radius:var(--radius);
-  transition:all 0.15s;user-select:none;flex:1;
+  cursor:pointer;padding:8px 16px;transition:all 0.2s;border-radius:12px;
 }
-.nav-item:active{background:var(--surface2);}
-.nav-icon{font-size:22px;transition:transform 0.15s;}
-.nav-item.active .nav-icon{transform:scale(1.15);}
-.nav-label{font-size:11px;font-weight:600;color:var(--text2);}
-.nav-item.active .nav-label{color:var(--accent);}
+.nav-item:active{transform:scale(0.9);}
+.nav-icon{font-size:23px;color:var(--text2);transition:color 0.2s;}
+.nav-label{font-size:11px;font-weight:600;color:var(--text2);transition:color 0.2s;}
+.nav-item.active .nav-icon, .nav-item.active .nav-label{color:var(--accent);}
+
 .nav-add{
   background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:18px;padding:10px 22px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  box-shadow:0 4px 16px rgba(124,111,255,0.4);transition:all 0.15s;user-select:none;
+  border-radius:50%;width:56px;height:56px;display:flex;align-items:center;
+  justify-content:center;font-size:26px;color:#fff;cursor:pointer;
+  box-shadow:0 8px 24px rgba(124,111,255,0.35);transition:all 0.2s;
+  position:absolute;top:-28px;left:50%;transform:translateX(-50%);
 }
-.nav-add:active{transform:scale(0.93);}
-.nav-add .nav-icon{font-size:22px;}
-.nav-add .nav-label{color:rgba(255,255,255,0.85);font-size:10px;}
+.nav-add:active{transform:translateX(-50%) scale(0.9);}
 
-/* ===================== SHARED TOPBAR ===================== */
-.sub-topbar{
-  display:flex;align-items:center;gap:12px;
-  padding:calc(var(--safe-t)+16px) 20px 14px;
-  background:var(--bg);flex-shrink:0;border-bottom:1px solid var(--border);
+/* ===================== DETAIL SCREEN ===================== */
+#detail-screen .screen-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-b)+20px);}
+
+.detail-header{
+  padding:calc(var(--safe-t)+16px) 20px 16px;
+  background:linear-gradient(180deg,var(--surface) 0%,transparent 100%);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
 }
-.sub-topbar-title{font-size:18px;font-weight:800;flex:1;}
-.back-btn{
+.back-btn-new{
   background:var(--surface2);border:1.5px solid var(--border);
-  border-radius:12px;padding:9px 14px;font-size:14px;
-  cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;
-  font-family:'Heebo';font-weight:600;transition:all 0.15s;flex-shrink:0;
+  border-radius:12px;padding:10px 14px;color:var(--text);
+  font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;
+  font-family:'Heebo';display:flex;align-items:center;gap:6px;
 }
-.back-btn:active{background:var(--surface3);}
+.back-btn-new:active{transform:scale(0.95);}
 
-/* ===================== INNER SCROLL (detail, add, settings) ===================== */
-.inner-scroll{
+.detail-actions{display:flex;gap:8px;}
+.detail-btn{
+  padding:10px 16px;border-radius:12px;border:1.5px solid;
+  font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;
+  font-family:'Heebo';background:none;display:flex;align-items:center;gap:6px;
+}
+.detail-btn:active{transform:scale(0.95);}
+.detail-btn.edit{border-color:rgba(124,111,255,0.4);background:rgba(124,111,255,0.1);color:#9C8FFF;}
+.detail-btn.delete{border-color:rgba(255,71,87,0.4);background:rgba(255,71,87,0.1);color:#FF4757;}
+
+.detail-hero{padding:20px;text-align:center;}
+.detail-hero-img{width:120px;height:120px;border-radius:20px;object-fit:cover;margin:0 auto 16px;border:2px solid var(--border);}
+.detail-title{font-size:24px;font-weight:800;margin-bottom:8px;line-height:1.3;}
+.detail-merchant{font-size:15px;color:var(--text2);margin-bottom:16px;}
+
+.detail-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;}
+.detail-badge{
+  padding:6px 14px;border-radius:16px;font-size:13px;font-weight:600;
+  border:1.5px solid;display:inline-flex;align-items:center;gap:6px;
+}
+.detail-badge.cat{border-color:var(--border);background:var(--surface2);color:var(--text2);}
+.detail-badge.exp{border-color:rgba(255,159,64,0.4);background:rgba(255,159,64,0.1);color:#FF9F40;}
+.detail-badge.exp.soon{border-color:rgba(255,107,157,0.5);background:rgba(255,107,157,0.15);color:#FF6B9D;}
+.detail-badge.exp.expired{border-color:rgba(107,114,128,0.4);background:rgba(107,114,128,0.12);color:#9CA3AF;}
+
+.detail-code-box{
+  background:var(--surface2);border:2px dashed var(--border);
+  border-radius:var(--radius);padding:16px;margin:0 20px 20px;
+  text-align:center;cursor:pointer;transition:all 0.2s;
+}
+.detail-code-box:active{transform:scale(0.98);}
+.detail-code-label{font-size:12px;color:var(--text2);margin-bottom:6px;}
+.detail-code-text{font-size:20px;font-weight:800;font-family:monospace;letter-spacing:2px;color:var(--accent);}
+
+.detail-section{padding:0 20px 20px;}
+.section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
+.info-grid{display:grid;gap:10px;}
+.info-row{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+}
+.info-icon{font-size:18px;color:var(--text2);}
+.info-content{flex:1;display:flex;flex-direction:column;gap:2px;}
+.info-label{font-size:11px;color:var(--text2);font-weight:600;}
+.info-value{font-size:14px;color:var(--text);font-weight:600;word-break:break-all;}
+
+.link-btn-detail{
+  background:linear-gradient(135deg,rgba(124,111,255,0.15),rgba(255,107,157,0.1));
+  border:1.5px solid rgba(124,111,255,0.3);border-radius:var(--radius-sm);
+  padding:14px;display:flex;align-items:center;gap:12px;
+  text-decoration:none;color:var(--text);transition:all 0.2s;
+}
+.link-btn-detail:active{transform:scale(0.98);}
+
+.tags-row{display:flex;gap:6px;flex-wrap:wrap;}
+.tag-pill{
+  padding:5px 12px;border-radius:16px;font-size:12px;font-weight:600;
+  background:var(--surface3);border:1px solid var(--border);color:var(--text2);
+}
+
+.action-btn-row{display:flex;gap:10px;padding:0 20px 20px;}
+.action-btn-big{
+  flex:1;padding:14px;border-radius:var(--radius);
+  font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;
+  font-family:'Heebo';border:2px solid;display:flex;align-items:center;
+  justify-content:center;gap:8px;
+}
+.action-btn-big:active{transform:scale(0.97);}
+.action-btn-big.toggle{border-color:rgba(0,212,170,0.4);background:rgba(0,212,170,0.1);color:#00D4AA;}
+.action-btn-big.share{border-color:rgba(124,111,255,0.4);background:rgba(124,111,255,0.1);color:#9C8FFF;}
+
+/* ===================== ADD/EDIT SCREEN ===================== */
+#add-screen .screen-content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.add-header{
+  padding:calc(var(--safe-t)+16px) 20px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);
+}
+.add-header h2{font-size:20px;font-weight:800;}
+
+.add-form-scroll{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:16px 20px;overscroll-behavior:contain;
-  scrollbar-width:thin;scrollbar-color:rgba(124,111,255,0.25) transparent;
+  padding:20px 20px calc(var(--safe-b)+80px);
 }
-.inner-scroll::-webkit-scrollbar{width:4px;}
-.inner-scroll::-webkit-scrollbar-thumb{background:rgba(124,111,255,0.25);border-radius:2px;}
 
-/* ===================== DETAIL ===================== */
-.detail-hero{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:24px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;
+.form-group{margin-bottom:20px;}
+.form-label{
+  font-size:13px;font-weight:700;color:var(--text2);
+  margin-bottom:8px;display:block;
 }
-.detail-hero::before{
-  content:'';position:absolute;top:-40px;left:-40px;
-  width:200px;height:200px;border-radius:50%;
-  background:radial-gradient(circle,rgba(124,111,255,0.12) 0%,transparent 70%);
-  pointer-events:none;
-}
-.detail-hero-img{width:100%;max-height:200px;object-fit:cover;border-radius:14px;margin-bottom:14px;border:1px solid var(--border);}
-.detail-merchant-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.detail-cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.detail-merchant{font-size:13px;color:var(--text2);}
-.detail-nickname{font-size:14px;color:var(--accent2);font-style:italic;margin-bottom:4px;}
-.detail-title{font-size:24px;font-weight:900;margin-bottom:14px;letter-spacing:-0.5px;}
-.detail-value-block{text-align:center;margin:16px 0;}
-.detail-value-label{font-size:12px;color:var(--text2);margin-bottom:4px;}
-.detail-value{font-size:46px;font-weight:900;line-height:1;}
-.code-block{
-  background:var(--surface2);border:1.5px solid rgba(124,111,255,0.3);
-  border-radius:var(--radius);padding:18px;text-align:center;margin-bottom:14px;
-}
-.code-label{font-size:12px;color:var(--text2);margin-bottom:8px;}
-.code-value{font-family:'Courier New',monospace;font-size:24px;font-weight:700;letter-spacing:3px;color:var(--accent);word-break:break-all;margin-bottom:12px;}
-.copy-code-btn{
-  background:linear-gradient(135deg,var(--accent),#A08FFF);border:none;
-  border-radius:var(--radius-sm);padding:12px 32px;color:#fff;
-  font-family:'Heebo';font-size:15px;font-weight:700;cursor:pointer;
-  transition:all 0.15s;width:100%;
-}
-.copy-code-btn:active{transform:scale(0.96);}
-.copy-code-btn.copied{background:linear-gradient(135deg,#00D4AA,#00B894);}
-.detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.info-cell{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;}
-.info-cell-label{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:600;}
-.info-cell-value{font-size:14px;font-weight:700;}
-.detail-tags{margin-bottom:14px;}
-.detail-tags-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;}
-.action-buttons{display:flex;gap:10px;margin-bottom:14px;}
-.action-btn{flex:1;padding:14px;border-radius:var(--radius);border:none;font-family:'Heebo';font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;}
-.action-btn.icon-btn{flex:0 0 48px;font-size:20px;padding:12px 0;}
-.action-btn.primary{background:linear-gradient(135deg,#00D4AA,#00B894);color:#fff;}
-.action-btn.undo{background:var(--surface2);color:var(--text2);border:1.5px solid var(--border);}
-.action-btn.danger{background:rgba(255,71,87,0.12);border:1.5px solid rgba(255,71,87,0.25);color:#FF4757;}
-.action-btn.edit{background:linear-gradient(135deg,var(--accent),#A08FFF);color:#fff;}
-
-/* ===================== ADD / EDIT FORM ===================== */
-.sticky-submit{
-  flex-shrink:0;padding:10px 20px;
-  padding-bottom:calc(var(--safe-b)+10px);
-  background:var(--bg);border-top:1px solid var(--border);z-index:10;
-}
-.form-section{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;}
-.form-section:last-child{margin-bottom:0;}
-.form-section-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-.form-field{margin-bottom:12px;}
-.form-field:last-child{margin-bottom:0;}
-.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
-.form-input{
+.form-label .required{color:var(--accent2);}
+.form-input, .form-textarea{
   width:100%;background:var(--surface2);border:1.5px solid var(--border);
   border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);
-  font-family:'Heebo';font-size:15px;outline:none;transition:border-color 0.2s;
-  direction:rtl;-webkit-appearance:none;
+  font-family:'Heebo';font-size:15px;transition:border-color 0.2s;
+  direction:rtl;
 }
-.form-input:focus{border-color:var(--accent);}
-.form-input::placeholder{color:var(--text2);}
-.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.cat-option{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 4px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
-.cat-option.selected{border-color:var(--accent);background:rgba(124,111,255,0.15);}
-.cat-option .cat-emoji{font-size:20px;display:block;margin-bottom:4px;}
-.cat-option .cat-name{font-size:10px;font-weight:600;color:var(--text2);}
+.form-input:focus, .form-textarea:focus{outline:none;border-color:var(--accent);}
+.form-textarea{resize:vertical;min-height:80px;}
+
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.cat-option{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 8px;text-align:center;
+  cursor:pointer;transition:all 0.2s;user-select:none;
+}
+.cat-option:active{transform:scale(0.95);}
+.cat-option.selected{border-color:var(--accent);background:rgba(124,111,255,0.12);}
+.cat-emoji{font-size:24px;display:block;margin-bottom:6px;}
+.cat-name{font-size:12px;font-weight:600;color:var(--text2);}
 .cat-option.selected .cat-name{color:var(--accent);}
-.img-upload-label{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  background:var(--surface2);border:1.5px dashed rgba(124,111,255,0.4);
-  border-radius:var(--radius-sm);padding:20px;cursor:pointer;
-  color:var(--accent);font-weight:600;font-size:14px;transition:all 0.2s;
+
+.img-upload-box{
+  background:var(--surface2);border:2px dashed var(--border);
+  border-radius:var(--radius);padding:24px;text-align:center;
+  cursor:pointer;transition:all 0.2s;position:relative;
 }
-.img-upload-label:hover{background:rgba(124,111,255,0.1);border-color:var(--accent);}
-.img-upload-label input{display:none;}
-.img-preview-wrap{position:relative;margin-top:10px;}
-.img-preview{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1.5px solid var(--border);display:none;}
+.img-upload-box:hover{border-color:var(--accent);}
+.img-upload-box input{display:none;}
+.img-preview{max-width:100%;max-height:150px;border-radius:var(--radius-sm);display:none;margin:0 auto 12px;}
 .img-preview.show{display:block;}
-.img-remove{
-  position:absolute;top:8px;left:8px;
-  background:rgba(0,0,0,0.6);border:none;border-radius:50%;
-  width:28px;height:28px;display:none;align-items:center;justify-content:center;
-  color:#fff;font-size:14px;cursor:pointer;
+.img-remove-btn{
+  background:rgba(255,71,87,0.15);border:1.5px solid rgba(255,71,87,0.3);
+  color:#FF4757;border-radius:20px;padding:6px 14px;font-size:12px;
+  font-weight:600;cursor:pointer;margin-top:10px;display:none;
+  font-family:'Heebo';transition:all 0.2s;
 }
-.img-remove.show{display:flex;}
-.submit-btn{
-  width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border:none;border-radius:var(--radius);padding:15px;color:#fff;
-  font-family:'Heebo';font-size:16px;font-weight:800;cursor:pointer;
-  transition:all 0.15s;box-shadow:0 4px 20px rgba(124,111,255,0.35);
-}
-.submit-btn:active{transform:scale(0.97);}
-.submit-btn:disabled{opacity:0.35;pointer-events:none;}
+.img-remove-btn.show{display:inline-block;}
+.img-remove-btn:active{transform:scale(0.95);}
 
-/* ===================== SETTINGS ===================== */
-.settings-section{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;}
-.settings-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
-.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;}
-.settings-row:last-child{border-bottom:none;padding-bottom:0;}
-.settings-row-label{font-size:14px;font-weight:600;}
-.settings-row-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.submit-bar{
+  position:fixed;bottom:var(--safe-b);left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:16px 20px;display:flex;gap:10px;z-index:200;
+}
+.submit-bar button{
+  flex:1;padding:14px;border-radius:var(--radius);
+  font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;
+  font-family:'Heebo';border:none;
+}
+.submit-bar .cancel-btn{
+  background:var(--surface2);color:var(--text2);border:1.5px solid var(--border);
+}
+.submit-bar .submit-btn{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  box-shadow:0 4px 16px rgba(124,111,255,0.3);
+}
+.submit-bar .submit-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.submit-bar button:active:not(:disabled){transform:scale(0.97);}
+
+/* ===================== SETTINGS SCREEN ===================== */
+#settings-screen .screen-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-b)+20px);}
+.settings-header{
+  padding:calc(var(--safe-t)+16px) 20px 20px;
+  border-bottom:1px solid var(--border);
+}
+.settings-header h2{font-size:24px;font-weight:800;}
+
+.stats-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+  padding:20px;
+}
+.stat-card{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:16px;text-align:center;
+}
+.stat-num{font-size:28px;font-weight:900;margin-bottom:6px;color:var(--accent);}
+.stat-label{font-size:12px;color:var(--text2);font-weight:600;}
+
+.settings-section{padding:0 20px 24px;}
+.settings-section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+
+.setting-row{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.setting-info{flex:1;}
+.setting-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.setting-sub{font-size:12px;color:var(--text2);}
+
 .toggle{
-  width:48px;height:28px;background:var(--surface3);border-radius:14px;
-  position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;
+  width:50px;height:28px;background:var(--surface3);border:2px solid var(--border);
+  border-radius:20px;cursor:pointer;position:relative;transition:all 0.2s;
+  flex-shrink:0;
 }
-.toggle.on{background:var(--accent);}
 .toggle::after{
-  content:'';position:absolute;width:22px;height:22px;background:#fff;
-  border-radius:50%;top:3px;right:3px;transition:transform 0.2s;
-  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  content:'';position:absolute;top:2px;right:2px;width:20px;height:20px;
+  background:var(--text2);border-radius:50%;transition:all 0.2s;
 }
-.toggle.on::after{transform:translateX(-20px);}
-.days-input{
-  background:var(--surface2);border:1.5px solid rgba(124,111,255,0.3);
-  border-radius:8px;padding:6px 12px;color:var(--accent);
-  font-family:'Heebo';font-size:16px;font-weight:700;
-  width:70px;text-align:center;outline:none;
-}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.stat-card{background:var(--surface2);border-radius:var(--radius-sm);padding:14px;text-align:center;}
-.stat-num{font-size:28px;font-weight:900;color:var(--accent);}
-.stat-label{font-size:11px;color:var(--text2);font-weight:600;}
+.toggle.on{background:var(--accent);border-color:var(--accent);}
+.toggle.on::after{right:24px;background:#fff;}
 
-/* ===================== TOAST ===================== */
-#toast{
-  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);
-  left:50%;transform:translateX(-50%) translateY(16px);
-  background:rgba(22,22,42,0.96);border:1px solid var(--border);
-  backdrop-filter:blur(16px);color:#fff;padding:10px 20px;
-  border-radius:20px;font-size:13px;font-weight:600;
-  pointer-events:none;opacity:0;transition:all 0.25s;z-index:999;
-  white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.4);
+.num-input{
+  width:70px;background:var(--surface3);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:8px 12px;color:var(--text);
+  font-family:'Heebo';font-size:15px;font-weight:600;text-align:center;
 }
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.num-input:focus{outline:none;border-color:var(--accent);}
 
-/* INSTALL BANNER */
-#install-banner{
-  display:none;margin:8px 20px;flex-shrink:0;
-  background:linear-gradient(135deg,rgba(124,111,255,0.15),rgba(255,107,157,0.1));
-  border:1px solid rgba(124,111,255,0.3);border-radius:var(--radius);
-  padding:12px 14px;align-items:center;gap:10px;
+.action-btn{
+  background:var(--surface2);border:1.5px solid;
+  border-radius:var(--radius-sm);padding:12px 16px;
+  font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;
+  font-family:'Heebo';width:100%;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
 }
-#install-banner.show{display:flex;}
-.install-text{flex:1;font-size:13px;}
-.install-text strong{display:block;font-weight:700;margin-bottom:2px;}
-.install-text span{color:var(--text2);font-size:12px;}
-.install-btn{background:var(--accent);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-family:'Heebo';font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;}
-.install-dismiss{font-size:18px;color:var(--text2);cursor:pointer;padding:4px;}
+.action-btn:active{transform:scale(0.98);}
+.action-btn.danger{border-color:rgba(255,71,87,0.4);background:rgba(255,71,87,0.1);color:#FF4757;}
 
-/* GRADIENTS */
-.grad-rest{background:linear-gradient(135deg,#FF6B6B,#FF8E53);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-shop{background:linear-gradient(135deg,#4ECDC4,#45B7D1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-ent{background:linear-gradient(135deg,#A855F7,#EC4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-trav{background:linear-gradient(135deg,#3B82F6,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-spa{background:linear-gradient(135deg,#EC4899,#F97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-sport{background:linear-gradient(135deg,#10B981,#84CC16);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-other{background:linear-gradient(135deg,#F59E0B,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+/* ===================== MISC ===================== */
+.install-banner{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 10px);
+  left:16px;right:16px;background:linear-gradient(135deg,rgba(124,111,255,0.95),rgba(255,107,157,0.95));
+  border-radius:var(--radius);padding:14px 16px;display:none;align-items:center;
+  gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:300;
+  backdrop-filter:blur(10px);
+}
+.install-banner.show{display:flex;}
+.install-banner-icon{font-size:28px;}
+.install-banner-text{flex:1;font-size:13px;font-weight:600;color:#fff;line-height:1.4;}
+.install-banner button{
+  padding:8px 16px;background:#fff;color:var(--accent);
+  border:none;border-radius:20px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:'Heebo';
+}
+.install-dismiss{font-size:20px;color:rgba(255,255,255,0.7);cursor:pointer;padding:4px;}
+
+.toast{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 20px);
+  left:50%;transform:translateX(-50%) translateY(100px);
+  background:rgba(22,22,42,0.95);backdrop-filter:blur(12px);
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:12px 20px;font-size:14px;font-weight:600;
+  color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  z-index:500;opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;white-space:nowrap;max-width:90%;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:360px){
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+  .stats-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 <div id="app">
-<div id="toast"></div>
 
-<!-- ============ HOME SCREEN ============ -->
+<!-- ===================== HOME SCREEN ===================== -->
 <div id="home-screen" class="screen active">
-
-  <div id="install-banner">
-    <div class="install-text"><strong>📲 התקן כאפליקציה</strong><span>הוסף למסך הבית לגישה מהירה</span></div>
-    <button class="install-btn" id="install-btn">התקן</button>
-    <span class="install-dismiss" id="install-dismiss">✕</span>
-  </div>
-
-  <!-- ONE scroll container — header + content all scroll together -->
-  <div class="home-scroll" id="home-scroll">
-
-    <!-- Header is just a div inside the scroll, NOT sticky -->
+  <div class="home-scroll">
     <div class="home-header">
       <div class="topbar-row">
-        <span class="app-title">🎟 השוברים שלי</span>
-        <span class="count-pill"><span id="active-count">0</span> פעילים</span>
+        <div class="app-title">השוברים שלי</div>
+        <div class="count-pill"><span id="count-num">0</span> שוברים</div>
       </div>
+      
       <div class="search-wrap">
         <div class="search-box">
-          <span style="opacity:0.4;font-size:16px;">🔍</span>
-          <input type="search" id="search-input" placeholder="חפש שם, קוד, תגית..." autocomplete="off" enterkeyhint="search">
+          <span style="font-size:18px;">🔍</span>
+          <input type="text" id="search-input" placeholder="חיפוש שוברים...">
         </div>
-        <div class="sort-btn" id="sort-toggle">⇅ תוקף</div>
+        <button class="sort-btn" id="sort-toggle">📅 תוקף</button>
       </div>
-      <div class="chips-row" id="chips-row"></div>
+
+      <div class="chips-row">
+        <div class="chip active" data-filter="all">🎯 הכל</div>
+        <div class="chip" data-filter="active">✅ פעילים</div>
+        <div class="chip" data-filter="expiring">⏰ פגים בקרוב</div>
+        <div class="chip" data-filter="used">✓ ממושים</div>
+        <div class="chip" data-filter="expired">❌ פגי תוקף</div>
+      </div>
     </div>
 
-    <div class="filter-row" id="filter-row">
-      <div class="filter-pill" data-filter="all">הכל</div>
-      <div class="filter-pill active" data-filter="unused">פעילים</div>
-      <div class="filter-pill" data-filter="used">ממושים</div>
-      <div class="filter-pill" data-filter="expiring">פגים בקרוב</div>
+    <div class="filter-row" id="cat-filter-row"></div>
+
+    <div id="alert-banner" class="alert-banner" style="display:none;">
+      <span style="font-size:20px;">⏰</span>
+      <div style="flex:1;font-size:13px;font-weight:600;line-height:1.4;" id="alert-text"></div>
+      <span class="alert-close" id="alert-close">✕</span>
     </div>
 
-    <div id="alert-container"></div>
-
-    <div class="cards-container" id="voucher-list"></div>
-
-  </div><!-- .home-scroll -->
+    <div class="cards-container" id="cards-container"></div>
+  </div>
 
   <nav class="bottom-nav">
-    <div class="nav-item active" data-screen="home-screen"><span class="nav-icon">🎟</span><span class="nav-label">שוברים</span></div>
-    <div class="nav-add" id="nav-add-btn"><span class="nav-icon">＋</span><span class="nav-label">הוסף</span></div>
-    <div class="nav-item" data-screen="settings-screen"><span class="nav-icon">⚙️</span><span class="nav-label">הגדרות</span></div>
+    <div class="nav-item active" data-screen="home-screen">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">ראשי</div>
+    </div>
+    <div class="nav-add" id="nav-add-btn">➕</div>
+    <div class="nav-item" data-screen="settings-screen">
+      <div class="nav-icon">⚙️</div>
+      <div class="nav-label">הגדרות</div>
+    </div>
   </nav>
 </div>
 
-<!-- ============ DETAIL SCREEN ============ -->
+<!-- ===================== DETAIL SCREEN ===================== -->
 <div id="detail-screen" class="screen">
-  <div class="sub-topbar">
-    <button class="back-btn" id="back-from-detail">← חזור</button>
-    <span id="detail-topbar-title" style="flex:1;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+  <div class="screen-content">
+    <div class="detail-header">
+      <div class="detail-actions">
+        <button class="detail-btn edit" id="detail-edit-btn">✏️ ערוך</button>
+        <button class="detail-btn delete" id="detail-delete-btn">🗑 מחק</button>
+      </div>
+      <button class="back-btn-new" id="back-from-detail">← חזור</button>
+    </div>
+
+    <div class="detail-hero">
+      <img id="detail-img" class="detail-hero-img" style="display:none;">
+      <h1 class="detail-title" id="detail-title"></h1>
+      <div class="detail-merchant" id="detail-merchant"></div>
+      <div class="detail-badges" id="detail-badges"></div>
+    </div>
+
+    <div id="detail-code-section" style="display:none;">
+      <div class="detail-code-box" id="detail-code-box">
+        <div class="detail-code-label">📋 קוד השובר (לחץ להעתקה)</div>
+        <div class="detail-code-text" id="detail-code"></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="section-title">פרטים</div>
+      <div class="info-grid" id="detail-info-grid"></div>
+    </div>
+
+    <div id="detail-tags-section" class="detail-section" style="display:none;">
+      <div class="section-title">תגיות</div>
+      <div class="tags-row" id="detail-tags"></div>
+    </div>
+
+    <div class="action-btn-row">
+      <button class="action-btn-big toggle" id="detail-toggle-btn">✓ סמן כממוש</button>
+      <button class="action-btn-big share" id="detail-share-btn">📤 שתף</button>
+    </div>
   </div>
-  <div class="inner-scroll" id="detail-content" style="padding-bottom:calc(var(--safe-b)+20px);"></div>
 </div>
 
-<!-- ============ ADD / EDIT SCREEN ============ -->
+<!-- ===================== ADD/EDIT SCREEN ===================== -->
 <div id="add-screen" class="screen">
-  <div class="sub-topbar">
-    <button class="back-btn" id="back-from-add">✕</button>
-    <span class="sub-topbar-title" id="add-screen-title">שובר חדש</span>
-  </div>
-  <div class="inner-scroll" id="add-form-scroll">
-
-    <div class="form-section">
-      <div class="form-section-title">💎 קוד השובר</div>
-      <div class="form-field">
-        <label class="form-label">קוד מימוש <span style="color:var(--accent2);font-size:10px;">• חובה אם אין שם או תמונה</span></label>
-        <input class="form-input" id="f-code" placeholder="ABCD-1234" type="text" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;direction:ltr;text-align:center;">
-      </div>
-      <div class="form-field" style="margin-bottom:0">
-        <label class="form-label">קישור לאתר (אופציונלי)</label>
-        <input class="form-input" id="f-link" placeholder="https://..." type="url">
-      </div>
+  <div class="screen-content">
+    <div class="add-header">
+      <h2 id="add-screen-title">שובר חדש</h2>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">📷 תמונת השובר</div>
-      <label class="img-upload-label">
-        <span>📷</span><span>הוסף תמונה מהגלריה</span>
-        <input type="file" id="f-image" accept="image/*">
-      </label>
-      <div class="img-preview-wrap">
-        <img class="img-preview" id="img-preview" src="" alt="">
-        <button class="img-remove" id="img-remove" type="button">✕</button>
+    <div class="add-form-scroll" id="add-form-scroll">
+      <!-- 1. שם השובר -->
+      <div class="form-group">
+        <label class="form-label">שם השובר <span class="required">*</span></label>
+        <input type="text" id="f-title" class="form-input" placeholder="למשל: קופון 50% הנחה">
       </div>
-    </div>
 
-    <div class="form-section">
-      <div class="form-section-title">📋 פרטי השובר</div>
-      <div class="form-field">
-        <label class="form-label">שם השובר <span style="color:var(--accent2);font-size:10px;">• חובה אם אין קוד או תמונה</span></label>
-        <input class="form-input" id="f-title" placeholder="ארוחת ערב זוגית" type="text" autocomplete="off">
+      <!-- 2. קוד השובר -->
+      <div class="form-group">
+        <label class="form-label">קוד השובר <span class="required">*</span></label>
+        <input type="text" id="f-code" class="form-input" placeholder="למשל: SAVE50">
       </div>
-      <div class="form-field">
-        <label class="form-label">כינוי אישי (אופציונלי)</label>
-        <input class="form-input" id="f-nickname" placeholder='חגיגת יום הולדת 🎂' type="text" autocomplete="off">
-      </div>
-      <div class="form-field">
-        <label class="form-label">שם העסק (אופציונלי)</label>
-        <input class="form-input" id="f-merchant" placeholder="מסעדת נאפולי" type="text" autocomplete="off">
-      </div>
-      <div class="form-field" style="margin-bottom:0">
-        <label class="form-label">שווי (אופציונלי)</label>
-        <input class="form-input" id="f-value" placeholder="₪200 / 10% / 2 כרטיסים" type="text" autocomplete="off">
-      </div>
-    </div>
 
-    <div class="form-section">
-      <div class="form-section-title">🏷 קטגוריה</div>
-      <div class="cat-grid" id="cat-grid"></div>
-    </div>
+      <!-- 3. תוקף -->
+      <div class="form-group">
+        <label class="form-label">תאריך תוקף</label>
+        <input type="date" id="f-expiry" class="form-input">
+      </div>
 
-    <div class="form-section">
-      <div class="form-section-title">📅 תוקף ותגיות</div>
-      <div class="form-field">
-        <label class="form-label">תאריך תפוגה (אופציונלי)</label>
-        <input class="form-input" id="f-expiry" type="date" style="color-scheme:dark;">
+      <!-- 4. תמונה -->
+      <div class="form-group">
+        <label class="form-label">תמונת השובר</label>
+        <div class="img-upload-box" onclick="document.getElementById('f-image').click()">
+          <img id="img-preview" class="img-preview">
+          <div style="font-size:32px;margin-bottom:8px;">📷</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text2);">לחץ להעלאת תמונה</div>
+          <button class="img-remove-btn" id="img-remove" onclick="event.stopPropagation()">✕ הסר תמונה</button>
+          <input type="file" id="f-image" accept="image/*">
+        </div>
       </div>
-      <div class="form-field">
-        <label class="form-label">תגיות (מופרדות בפסיקים)</label>
-        <input class="form-input" id="f-tags" placeholder="רומנטי, זוגי, יום הולדת" type="text" autocomplete="off">
+
+      <!-- 5. שווי -->
+      <div class="form-group">
+        <label class="form-label">שווי השובר</label>
+        <input type="text" id="f-value" class="form-input" placeholder="למשל: ₪100">
       </div>
-      <div class="form-field" style="margin-bottom:0">
+
+      <!-- 6. קישור -->
+      <div class="form-group">
+        <label class="form-label">קישור לשובר</label>
+        <input type="url" id="f-link" class="form-input" placeholder="https://...">
+      </div>
+
+      <!-- 7. הערות -->
+      <div class="form-group">
         <label class="form-label">הערות</label>
-        <textarea class="form-input" id="f-notes" placeholder="פרטים נוספים..." rows="2" style="resize:none;"></textarea>
+        <textarea id="f-notes" class="form-textarea" placeholder="הערות נוספות..."></textarea>
+      </div>
+
+      <!-- ואז השאר -->
+      <div class="form-group">
+        <label class="form-label">כינוי</label>
+        <input type="text" id="f-nickname" class="form-input" placeholder="כינוי אישי לשובר">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">בית עסק</label>
+        <input type="text" id="f-merchant" class="form-input" placeholder="שם החנות/האתר">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">קטגוריה</label>
+        <div class="cat-grid" id="cat-grid"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">תגיות (מופרדות בפסיק)</label>
+        <input type="text" id="f-tags" class="form-input" placeholder="למשל: מכולת, הנחה, אונליין">
       </div>
     </div>
 
-    <div style="height:8px;"></div>
-  </div>
-  <div class="sticky-submit">
-    <button class="submit-btn" id="submit-btn" disabled>🎟 שמור שובר</button>
+    <div class="submit-bar">
+      <button class="cancel-btn" id="back-from-add">ביטול</button>
+      <button class="submit-btn" id="submit-btn" disabled>🎟 שמור שובר</button>
+    </div>
   </div>
 </div>
 
-<!-- ============ SETTINGS SCREEN ============ -->
+<!-- ===================== SETTINGS SCREEN ===================== -->
 <div id="settings-screen" class="screen">
-  <div class="sub-topbar" style="border-bottom:1px solid var(--border);">
-    <span class="app-title" style="font-size:22px;">⚙️ הגדרות</span>
-  </div>
-  <div class="inner-scroll" style="padding-bottom:calc(var(--nav-h) + var(--safe-b) + 16px);">
+  <div class="screen-content">
+    <div class="settings-header">
+      <h2>הגדרות</h2>
+    </div>
+
+    <div class="stats-grid" id="stats-grid"></div>
 
     <div class="settings-section">
-      <div class="settings-title">📊 סטטיסטיקות</div>
-      <div class="stat-grid" id="stats-grid"></div>
+      <div class="settings-section-title">התראות</div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">התראות על שוברים פגי תוקף</div>
+          <div class="setting-sub">קבל התראות על מכשיר לשוברים שעומדים לפוג</div>
+        </div>
+        <div class="toggle" id="notif-toggle"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">התרעה מראש (ימים)</div>
+          <div class="setting-sub">כמה ימים לפני התוקף להתריע</div>
+        </div>
+        <input type="number" class="num-input" id="days-input" min="1" max="90" value="7">
+      </div>
     </div>
 
     <div class="settings-section">
-      <div class="settings-title">🔔 התראות תפוגה</div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">התראות פעילות</div><div class="settings-row-sub">הצג באנר שוברים שעומדים לפוג</div></div>
-        <div class="toggle on" id="notif-toggle"></div>
-      </div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">ימים מראש</div><div class="settings-row-sub">כמה ימים לפני הפקיעה להתריע</div></div>
-        <input type="number" class="days-input" id="days-input" value="7" min="1" max="60">
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <div class="settings-title">🗑 מחיקה אוטומטית</div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">מחק שוברים ממושים אוטומטית</div><div class="settings-row-sub">הסר שוברים מומשים בפתיחת האפליקציה</div></div>
+      <div class="settings-section-title">ניהול אוטומטי</div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">מחיקה אוטומטית של שוברים ממושים</div>
+          <div class="setting-sub" id="used-count-sub">0 שוברים ממושים</div>
+        </div>
         <div class="toggle" id="auto-del-used-toggle"></div>
       </div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">מחק שוברים פגי תוקף אוטומטית</div><div class="settings-row-sub">הסר שוברים שפגו בפתיחת האפליקציה</div></div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">מחיקה אוטומטית של שוברים פגי תוקף</div>
+          <div class="setting-sub" id="expired-count-sub">0 שוברים פגי תוקף</div>
+        </div>
         <div class="toggle" id="auto-del-expired-toggle"></div>
       </div>
     </div>
 
     <div class="settings-section">
-      <div class="settings-title">🧹 ניקוי ידני</div>
-      <div class="settings-row" id="clear-used-btn" style="cursor:pointer;">
-        <div><div class="settings-row-label">מחק עכשיו: שוברים ממושים</div><div class="settings-row-sub" id="used-count-sub"></div></div>
-        <span style="color:var(--text2);font-size:18px;">›</span>
-      </div>
-      <div class="settings-row" id="clear-expired-btn" style="cursor:pointer;">
-        <div><div class="settings-row-label">מחק עכשיו: שוברים פגי תוקף</div><div class="settings-row-sub" id="expired-count-sub"></div></div>
-        <span style="color:var(--text2);font-size:18px;">›</span>
-      </div>
-    </div>
-
-    <div class="settings-section" style="text-align:center;padding:20px;">
-      <div style="font-size:40px;margin-bottom:8px;">🎟</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px;">השוברים שלי</div>
-      <div style="font-size:12px;color:var(--text2);">v4.0 — נבנה עם ❤️</div>
+      <div class="settings-section-title">פעולות</div>
+      <button class="action-btn danger" id="clear-used-btn">🗑 מחק את כל השוברים הממושים</button>
+      <button class="action-btn danger" id="clear-expired-btn">🗑 מחק את כל השוברים פגי התוקף</button>
     </div>
   </div>
-
-  <nav class="bottom-nav">
-    <div class="nav-item" data-screen="home-screen"><span class="nav-icon">🎟</span><span class="nav-label">שוברים</span></div>
-    <div class="nav-add" id="nav-add-btn-2"><span class="nav-icon">＋</span><span class="nav-label">הוסף</span></div>
-    <div class="nav-item active" data-screen="settings-screen"><span class="nav-icon">⚙️</span><span class="nav-label">הגדרות</span></div>
-  </nav>
 </div>
 
-</div><!-- #app -->
+</div>
+
+<div class="install-banner" id="install-banner">
+  <span class="install-banner-icon">📱</span>
+  <div class="install-banner-text">התקן את האפליקציה למסך הבית לשימוש מהיר ונוח!</div>
+  <button id="install-btn">התקן</button>
+  <span class="install-dismiss" id="install-dismiss">✕</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-// ===== CONSTANTS =====
 const CATEGORIES=[
-  {key:"מסעדות",emoji:"🍽",color:"#FF6B6B",grad:"grad-rest"},
-  {key:"קניות", emoji:"🛍",color:"#4ECDC4",grad:"grad-shop"},
-  {key:"בידור", emoji:"🎬",color:"#A855F7",grad:"grad-ent"},
-  {key:"נסיעות",emoji:"✈️",color:"#3B82F6",grad:"grad-trav"},
-  {key:"ספא",   emoji:"💆",color:"#EC4899",grad:"grad-spa"},
-  {key:"ספורט", emoji:"⚽",color:"#10B981",grad:"grad-sport"},
-  {key:"אחר",   emoji:"🎁",color:"#F59E0B",grad:"grad-other"},
-];
-const getCat=k=>CATEGORIES.find(c=>c.key===k)||CATEGORIES[6];
-
-const SAMPLE=[
-  {id:1, title:"ארוחת ערב זוגית",  nickname:"חגיגת יום הולדת 🎂",merchant:"מסעדת נאפולי",category:"מסעדות",code:"NAPO-2024-XK7",value:"₪250",expiryDate:"2026-03-15",link:"",notes:"",image:"",used:false,tags:["רומנטי","זוגי"],  createdAt:"2025-10-01"},
-  {id:2, title:"10% הנחה",          nickname:"",                   merchant:"ZARA",         category:"קניות", code:"ZARA10OFF",    value:"10%", expiryDate:"2026-02-28",link:"https://zara.com",notes:"",image:"",used:false,tags:["אופנה"],     createdAt:"2025-11-15"},
-  {id:3, title:"כרטיס סרט זוגי",   nickname:"סרט שישי 🎬",        merchant:"Yes Planet",   category:"בידור", code:"YES2FOR1",      value:"₪90", expiryDate:"2026-04-01",link:"",notes:"",image:"",used:false,tags:["בילוי"],     createdAt:"2025-12-01"},
-  {id:4, title:"עיסוי גב מלא",     nickname:"",                   merchant:"ספא גן עדן",   category:"ספא",   code:"SPA-BACK-50",   value:"₪200",expiryDate:"2026-06-30",link:"",notes:"שלוחה 3",image:"",used:false,tags:["רגיעה"],  createdAt:"2026-01-05"},
-  {id:5, title:"15% טיסות",         nickname:"",                   merchant:"El Al",         category:"נסיעות",code:"ELAL15OFF",     value:"15%", expiryDate:"2025-12-31",link:"",notes:"",image:"",used:true, tags:["חופשה"],     createdAt:"2025-09-01"},
-  {id:6, title:"כניסה לכושר",      nickname:"חודש נסיון 💪",      merchant:"Holmes Place", category:"ספורט", code:"HP-TRIAL-30",   value:"₪150",expiryDate:"2026-02-25",link:"",notes:"",image:"",used:false,tags:["בריאות"],    createdAt:"2026-01-10"},
+  {key:'🛒 מכולת',emoji:'🛒'},
+  {key:'👕 אופנה',emoji:'👕'},
+  {key:'🍔 אוכל',emoji:'🍔'},
+  {key:'✈️ טיסות',emoji:'✈️'},
+  {key:'🎮 משחקים',emoji:'🎮'},
+  {key:'💻 טכנולוגיה',emoji:'💻'},
+  {key:'🏋️ כושר',emoji:'🏋️'},
+  {key:'🏠 בית',emoji:'🏠'},
+  {key:'🎬 בידור',emoji:'🎬'},
+  {key:'אחר',emoji:'📦'}
 ];
 
-let vouchers = JSON.parse(localStorage.getItem('vch_v4'))||SAMPLE;
-let settings = JSON.parse(localStorage.getItem('set_v4'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
-// Defaults: show unused active, sorted by expiry
-let activeCat="הכל";
-let filter="unused";   // default: show only active unused
-let search="";
-let sortMode=0;        // 0=expiry asc
-let pendingImage="";
-let editingId=null;    // null=add mode, number=edit mode
+let vouchers=JSON.parse(localStorage.getItem('vouchers')||'[]');
+let settings=JSON.parse(localStorage.getItem('settings')||'{"notif":false,"alertDays":7,"autoDelUsed":false,"autoDelExpired":false}');
+let editingId=null;
+let pendingImage='';
+let sortMode=0; // 0=expiry, 1=created
+let search='';
+let filterCat='';
+let filterStatus='all';
 
-const save=()=>{
-  localStorage.setItem('vch_v4',JSON.stringify(vouchers));
-  localStorage.setItem('set_v4',JSON.stringify(settings));
+// Swipe state
+let swipeStartX=0;
+let swipeCurrentX=0;
+let swipeCard=null;
+let swipeWrapper=null;
+let isSwiping=false;
+
+const save=()=>{localStorage.setItem('vouchers',JSON.stringify(vouchers));localStorage.setItem('settings',JSON.stringify(settings));};
+const showScreen=s=>{document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(s).classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const n=document.querySelector(`[data-screen="${s}"]`);if(n)n.classList.add('active');};
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);};
+
+const daysUntil=d=>{if(!d)return 9999;const t=new Date(d);t.setHours(0,0,0,0);const n=new Date();n.setHours(0,0,0,0);return Math.ceil((t-n)/86400000);};
+
+const catColor=k=>{
+  const m={'🛒 מכולת':'#10b981','👕 אופנה':'#ec4899','🍔 אוכל':'#f59e0b','✈️ טיסות':'#3b82f6','🎮 משחקים':'#8b5cf6','💻 טכנולוגיה':'#06b6d4','🏋️ כושר':'#ef4444','🏠 בית':'#f97316','🎬 בידור':'#6366f1'};
+  return m[k]||'#6b7280';
 };
 
-const daysUntil=d=>{
-  if(!d) return 9999;
-  const t=new Date();t.setHours(0,0,0,0);
-  return Math.ceil((new Date(d)-t)/86400000);
-};
-const fmtDate=d=>{
-  if(!d)return'—';
-  return new Date(d).toLocaleDateString('he-IL',{day:'numeric',month:'short',year:'numeric'});
+// ===== NOTIFICATIONS =====
+let notificationPermission='default';
+const requestNotificationPermission=async()=>{
+  if(!('Notification' in window))return;
+  if(Notification.permission==='granted'){notificationPermission='granted';return;}
+  if(Notification.permission==='denied'){notificationPermission='denied';return;}
+  const p=await Notification.requestPermission();
+  notificationPermission=p;
+  if(p==='granted')toast('✅ התראות הופעלו בהצלחה!');
 };
 
-// ===== AUTO-DELETE ON STARTUP =====
+const sendNotification=(title,body)=>{
+  if(notificationPermission!=='granted')return;
+  if('serviceWorker' in navigator && 'PushManager' in window){
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title,{
+        body:body,
+        icon:'icon.svg',
+        badge:'icon.svg',
+        vibrate:[200,100,200],
+        tag:'voucher-expiry',
+        requireInteraction:true
+      });
+    });
+  }else{
+    new Notification(title,{body:body,icon:'icon.svg'});
+  }
+};
+
+const checkAndNotify=()=>{
+  if(!settings.notif||notificationPermission!=='granted')return;
+  const expiring=vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=settings.alertDays&&daysUntil(v.expiryDate)>0);
+  if(expiring.length>0){
+    const v=expiring[0];
+    const d=daysUntil(v.expiryDate);
+    sendNotification('⏰ שובר עומד לפוג!',`${v.title} פג תוקף בעוד ${d} ימים`);
+  }
+};
+
+// Check notifications on load and every hour
+if(settings.notif){
+  requestNotificationPermission().then(()=>checkAndNotify());
+  setInterval(checkAndNotify,3600000);
+}
+
+// ===== AUTO CLEAN =====
 const autoClean=()=>{
-  if(settings.autoDelUsed)    vouchers=vouchers.filter(v=>!v.used);
-  if(settings.autoDelExpired) vouchers=vouchers.filter(v=>!v.expiryDate||daysUntil(v.expiryDate)>0);
-  save();
-};
-
-// ===== NAV =====
-const showScreen=id=>{
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-};
-
-// ===== TOAST =====
-const toast=msg=>{
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);
-};
-
-// ===== BADGE =====
-const badge=v=>{
-  if(v.used) return{label:"✓ מומש",cls:"badge-used"};
-  if(!v.expiryDate) return{label:"ללא תוקף",color:"#9090B0",bg:"rgba(144,144,176,0.08)",border:"rgba(144,144,176,0.15)"};
-  const d=daysUntil(v.expiryDate);
-  if(d<=0)                  return{label:"פג תוקף",         color:"#ef4444",bg:"rgba(239,68,68,0.12)",   border:"rgba(239,68,68,0.25)"  };
-  if(d<=settings.alertDays) return{label:`⚠️ ${d} ימים`,    color:"#f97316",bg:"rgba(249,115,22,0.12)",  border:"rgba(249,115,22,0.25)" };
-  return{label:`תוקף: ${fmtDate(v.expiryDate)}`,            color:"#9090B0",bg:"rgba(144,144,176,0.08)",border:"rgba(144,144,176,0.15)"};
+  let changed=false;
+  if(settings.autoDelUsed){const before=vouchers.length;vouchers=vouchers.filter(v=>!v.used);if(vouchers.length<before){changed=true;}}
+  if(settings.autoDelExpired){const before=vouchers.length;vouchers=vouchers.filter(v=>v.used||!v.expiryDate||daysUntil(v.expiryDate)>0);if(vouchers.length<before){changed=true;}}
+  if(changed)save();
 };
 
 // ===== RENDER HOME =====
 const renderHome=()=>{
-  const activeCount=vouchers.filter(v=>!v.used&&daysUntil(v.expiryDate)>0).length;
-  document.getElementById('active-count').textContent=activeCount;
+  autoClean();
+  document.getElementById('count-num').textContent=vouchers.length;
 
-  // Alert
+  // Alert banner
   const expiring=vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=settings.alertDays&&daysUntil(v.expiryDate)>0);
-  const expired= vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=0);
-  const alertEl=document.getElementById('alert-container');
-  if(settings.notif&&(expiring.length||expired.length)){
-    alertEl.innerHTML=`<div class="alert-banner">
-      <span style="font-size:20px;flex-shrink:0;">🔔</span>
-      <div style="flex:1;">
-        ${expired.length?`<div style="font-size:13px;font-weight:700;color:#FF6B9D;">${expired.length} שובר/ים פגי תוקף!</div>`:''}
-        ${expiring.length?`<div style="font-size:12px;color:rgba(255,255,255,0.5);">${expiring.length} שובר/ים יפוגו תוך ${settings.alertDays} ימים</div>`:''}
-      </div>
-      <span class="alert-close" id="alert-close">✕</span>
-    </div>`;
-    document.getElementById('alert-close')?.addEventListener('click',()=>alertEl.innerHTML='');
-  } else { alertEl.innerHTML=''; }
+  const ab=document.getElementById('alert-banner');
+  if(expiring.length&&settings.notif){
+    ab.style.display='flex';
+    document.getElementById('alert-text').innerHTML=`<strong>${expiring.length}</strong> שוברים עומדים לפוג ב-${settings.alertDays} הימים הקרובים`;
+  }else{ab.style.display='none';}
 
-  // Chips
-  const cr=document.getElementById('chips-row');
-  cr.innerHTML=['הכל',...CATEGORIES.map(c=>c.key)].map(c=>
-    `<div class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c==='הכל'?'🎟 הכל':getCat(c).emoji+' '+c}</div>`
-  ).join('');
-  cr.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{activeCat=ch.dataset.cat;renderHome();}));
+  // Categories filter
+  const cats=[...new Set(vouchers.map(v=>v.category))];
+  const cfr=document.getElementById('cat-filter-row');
+  if(cats.length>1){
+    cfr.innerHTML=cats.map(c=>`<div class="filter-pill ${c===filterCat?'active':''}" data-cat="${c}">${c}</div>`).join('');
+    cfr.querySelectorAll('.filter-pill').forEach(p=>p.addEventListener('click',()=>{filterCat=p.dataset.cat===filterCat?'':p.dataset.cat;renderHome();}));
+  }else{cfr.innerHTML='';}
 
-  // Filter pills
-  document.querySelectorAll('.filter-pill').forEach(fp=>{
-    fp.classList.toggle('active',fp.dataset.filter===filter);
-    fp.onclick=()=>{filter=fp.dataset.filter;renderHome();};
-  });
+  // Filter & sort
+  let list=[...vouchers];
+  if(search){const s=search.toLowerCase();list=list.filter(v=>(v.title||'').toLowerCase().includes(s)||(v.code||'').toLowerCase().includes(s)||(v.merchant||'').toLowerCase().includes(s));}
+  if(filterCat)list=list.filter(v=>v.category===filterCat);
+  if(filterStatus==='active')list=list.filter(v=>!v.used&&daysUntil(v.expiryDate)>0);
+  if(filterStatus==='expiring')list=list.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=settings.alertDays&&daysUntil(v.expiryDate)>0);
+  if(filterStatus==='used')list=list.filter(v=>v.used);
+  if(filterStatus==='expired')list=list.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=0);
 
-  // Sort
-  const sb=document.getElementById('sort-toggle');
-  sb.textContent=sortMode===0?'⇅ תוקף':'⇅ הוספה';
-  sb.classList.toggle('active',sortMode!==0);
+  if(sortMode===0){
+    list.sort((a,b)=>{
+      const da=daysUntil(a.expiryDate),db=daysUntil(b.expiryDate);
+      if(da===9999&&db===9999)return 0;
+      if(da===9999)return 1;
+      if(db===9999)return -1;
+      return da-db;
+    });
+  }else{
+    list.sort((a,b)=>b.id-a.id);
+  }
 
-  // Filter
-  let list=vouchers.filter(v=>{
-    if(activeCat!=='הכל'&&v.category!==activeCat) return false;
-    if(filter==='unused'&&v.used) return false;
-    if(filter==='used'&&!v.used) return false;
-    if(filter==='expiring'&&(v.used||!v.expiryDate||daysUntil(v.expiryDate)>settings.alertDays||daysUntil(v.expiryDate)<=0)) return false;
-    if(search){
-      const q=search.toLowerCase();
-      return(v.title||'').includes(q)||(v.merchant||'').includes(q)||(v.nickname||'').includes(q)||
-             (v.code||'').toLowerCase().includes(q)||v.tags.some(t=>t.includes(q))||(v.notes||'').includes(q);
-    }
-    return true;
-  });
-
-  // Sort — default expiry ascending
-  if(sortMode===0) list.sort((a,b)=>(a.expiryDate||'9999')>(b.expiryDate||'9999')?1:-1);
-  else list.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-
-  const container=document.getElementById('voucher-list');
+  const cc=document.getElementById('cards-container');
   if(!list.length){
-    container.innerHTML='<div class="empty-state"><span class="emoji">🎟</span><h3>אין שוברים</h3><p>לא נמצאו שוברים<br>התואמים לחיפוש</p></div>';
+    cc.innerHTML=`<div class="empty-state">
+      <div class="empty-emoji">🎟</div>
+      <div class="empty-text">אין שוברים להצגה.<br>לחץ על + להוספת שובר חדש!</div>
+      <button class="empty-btn" id="nav-add-btn-2">➕ הוסף שובר</button>
+    </div>`;
     return;
   }
 
-  container.innerHTML=list.map(v=>{
-    const cat=getCat(v.category),b=badge(v);
-    const tagsHtml=v.tags.length?`<div class="tags-row">${v.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>`:'';
-    const thumbHtml=v.image?`<img class="card-thumb" src="${v.image}" alt="">`:'';
-    // Badge HTML — used gets its own class, others get inline style
-    const badgeHtml=b.cls
-      ? `<span class="expiry-badge ${b.cls}">${b.label}</span>`
-      : `<span class="expiry-badge" style="color:${b.color};background:${b.bg};border:1px solid ${b.border};">${b.label}</span>`;
-    return `
-      <div class="card-wrapper" data-id="${v.id}">
-        <div class="card-delete-bg"><span>🗑</span></div>
-        <div class="voucher-card ${v.used?'used':''} ${v.image?'has-thumb':''}" data-id="${v.id}">
-          <div class="card-stripe" style="background:${cat.color};"></div>
-          <div class="card-actions">
-            <button class="card-action-btn edit-btn" data-id="${v.id}" title="ערוך">✏️</button>
-            <button class="card-action-btn del-btn" data-id="${v.id}" title="מחק">🗑</button>
+  cc.innerHTML=list.map(v=>{
+    const d=daysUntil(v.expiryDate);
+    let expBadge='';
+    if(v.expiryDate&&!v.used){
+      if(d<=0)expBadge=`<div class="card-badge expired">⏱ פג תוקף</div>`;
+      else if(d<=settings.alertDays)expBadge=`<div class="card-badge soon">⏰ ${d} ימים</div>`;
+      else expBadge=`<div class="card-badge expiry">📅 ${d} ימים</div>`;
+    }
+    const valBadge=v.value?`<div class="card-badge value">💰 ${v.value}</div>`:'';
+    const usedClass=v.used?'used':'';
+    const thumbClass=v.image?'has-thumb':'';
+    const thumbImg=v.image?`<img src="${v.image}" class="card-thumb">`:'';
+
+    const linkBtn=v.link?`<a href="${v.link}" class="card-link-btn" onclick="event.stopPropagation();" target="_blank" rel="noopener">🔗 פתח קישור</a>`:'';
+
+    return`<div class="card-wrapper" data-id="${v.id}">
+      <div class="card-swipe-actions">
+        <div class="swipe-action-left"><span>✓</span></div>
+        <div class="swipe-action-right"><span>✏️</span></div>
+      </div>
+      <div class="voucher-card ${usedClass} ${thumbClass}" data-id="${v.id}">
+        ${thumbImg}
+        <div class="card-edit-btn" data-action="edit">✏️</div>
+        <div class="card-body">
+          <div class="card-top-row">
+            <div class="card-title">${v.title||v.code||'שובר'}</div>
           </div>
-          ${thumbHtml}
-          <div class="card-top">
-            <div class="card-left">
-              <div class="card-cat-badge"><div class="card-cat-dot" style="background:${cat.color};"></div>${cat.emoji} ${v.category}</div>
-              ${v.nickname?`<div class="card-nickname">"${v.nickname}"</div>`:''}
-              <div class="card-title">${v.title||v.code||'שובר'}</div>
-              ${v.merchant?`<div class="card-merchant">${v.merchant}</div>`:''}
-            </div>
-            ${v.value?`<div class="card-value ${cat.grad}">${v.value}</div>`:''}
+          <div class="card-badge-row">${expBadge}${valBadge}</div>
+          <div class="card-meta">
+            ${v.merchant?`<span>🏪 ${v.merchant}</span>`:''}
+            ${v.code?`<span>📋 ${v.code}</span>`:''}
           </div>
-          <div class="card-bottom">
-            ${badgeHtml}
-            ${v.code?`<button class="copy-btn-inline" data-code="${v.code}" onclick="event.stopPropagation();">${v.code}</button>`:''}
-          </div>
-          ${tagsHtml}
+          ${linkBtn}
         </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join('');
 
-  container.querySelectorAll('.voucher-card').forEach(card=>{
-    card.addEventListener('click',e=>{
-      if(e.target.closest('.copy-btn-inline')||e.target.closest('.card-action-btn')) return;
-      openDetail(parseInt(card.dataset.id));
-    });
-    // Swipe left to delete
-    let sx=0,cx=0,didSwipe=false;
-    card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;cx=sx;didSwipe=false;card.style.transition='';},{passive:true});
-    card.addEventListener('touchmove',e=>{
-      cx=e.touches[0].clientX;const d=sx-cx;
-      if(d>12){didSwipe=true;card.classList.add('swiping');card.style.transform=`translateX(-${Math.min(d,90)}px)`;}
+  // Attach swipe listeners
+  document.querySelectorAll('.card-wrapper').forEach(w=>{
+    const card=w.querySelector('.voucher-card');
+    const id=parseInt(w.dataset.id);
+
+    // Touch events for swipe
+    card.addEventListener('touchstart',e=>{
+      swipeStartX=e.touches[0].clientX;
+      swipeCurrentX=swipeStartX;
+      swipeCard=card;
+      swipeWrapper=w;
+      isSwiping=false;
     },{passive:true});
-    card.addEventListener('touchend',()=>{
-      card.classList.remove('swiping');
-      const d=sx-cx;
-      if(didSwipe && d>70){
-        card.style.transition='transform 0.2s';card.style.transform='translateX(-110%)';
-        setTimeout(()=>{vouchers=vouchers.filter(x=>x.id!==parseInt(card.dataset.id));save();renderHome();toast('🗑 השובר נמחק');},200);
-      } else {
-        card.style.transition='transform 0.2s';card.style.transform='translateX(0)';
+
+    card.addEventListener('touchmove',e=>{
+      if(!swipeCard)return;
+      swipeCurrentX=e.touches[0].clientX;
+      const diff=swipeCurrentX-swipeStartX;
+      if(Math.abs(diff)>10){
+        isSwiping=true;
+        e.preventDefault();
+        card.style.transform=`translateX(${diff}px)`;
+        card.style.transition='none';
       }
-      didSwipe=false;
-    });
-  });
+    },{passive:false});
 
-  // Edit buttons on cards
-  container.querySelectorAll('.card-action-btn.edit-btn').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.stopPropagation();
-      openEdit(parseInt(btn.dataset.id));
-    });
-  });
+    card.addEventListener('touchend',e=>{
+      if(!swipeCard||!isSwiping){swipeCard=null;swipeWrapper=null;isSwiping=false;return;}
+      const diff=swipeCurrentX-swipeStartX;
+      card.style.transition='transform 0.3s ease';
 
-  // Delete buttons on cards
-  container.querySelectorAll('.card-action-btn.del-btn').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.stopPropagation();
-      const id=parseInt(btn.dataset.id);
-      const v=vouchers.find(x=>x.id===id);
-      if(confirm(`למחוק את "${v?.title||v?.code||'השובר'}"?`)){
-        vouchers=vouchers.filter(x=>x.id!==id);save();renderHome();toast('🗑 השובר נמחק');
+      // Swipe right (edit) - threshold 80px
+      if(diff>80){
+        card.style.transform='translateX(100px)';
+        setTimeout(()=>{
+          card.style.transform='';
+          openEditMode(id);
+        },150);
       }
+      // Swipe left (use) - threshold -80px
+      else if(diff<-80){
+        card.style.transform='translateX(-100px)';
+        setTimeout(()=>{
+          card.style.transform='';
+          toggleUsed(id);
+        },150);
+      }
+      else{
+        card.style.transform='';
+      }
+
+      swipeCard=null;
+      swipeWrapper=null;
+      isSwiping=false;
+    });
+
+    // Click on card opens detail (but not if swiping or clicking edit button)
+    card.addEventListener('click',e=>{
+      if(isSwiping)return;
+      if(e.target.closest('.card-edit-btn')){
+        e.stopPropagation();
+        openEditMode(id);
+        return;
+      }
+      if(e.target.closest('.card-link-btn'))return; // Don't open detail if clicking link
+      openDetail(id);
     });
   });
 
-  container.querySelectorAll('.copy-btn-inline').forEach(btn=>{
-    btn.addEventListener('click',e=>{e.stopPropagation();copyCode(btn.dataset.code,btn);});
-  });
+  document.getElementById('sort-toggle').className=sortMode===0?'sort-btn active':'sort-btn';
 };
 
-// ===== COPY =====
-const copyCode=(text,btn)=>{
-  navigator.clipboard.writeText(text).then(()=>{
-    if(btn){const o=btn.textContent;btn.textContent='✓ הועתק!';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},2000);}
-    toast('✓ הקוד הועתק!');
-  }).catch(()=>toast('העתקה נכשלה'));
+document.getElementById('alert-close').addEventListener('click',()=>document.getElementById('alert-banner').style.display='none');
+
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');
+  filterStatus=c.dataset.filter;
+  renderHome();
+}));
+
+const toggleUsed=id=>{
+  vouchers=vouchers.map(v=>v.id===id?{...v,used:!v.used}:v);
+  save();renderHome();
+  const v=vouchers.find(x=>x.id===id);
+  toast(v.used?'✓ שובר סומן כממוש':'↩️ שובר סומן כלא ממוש');
 };
 
 // ===== DETAIL =====
 const openDetail=id=>{
-  const v=vouchers.find(x=>x.id===id);if(!v)return;
-  const cat=getCat(v.category),b=badge(v);
-  document.getElementById('detail-topbar-title').textContent=v.title||v.code||'שובר';
+  const v=vouchers.find(x=>x.id===id);
+  if(!v)return;
 
-  const imgHtml=v.image?`<img class="detail-hero-img" src="${v.image}" alt="">`:'';
-  const tagsHtml=v.tags.length?`<div class="detail-tags"><div class="detail-tags-label">🏷 תגיות</div><div class="tags-row">${v.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div></div>`:'';
-  const linkHtml=v.link?`<a href="${v.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="display:block;background:rgba(124,111,255,0.12);border:1.5px solid rgba(124,111,255,0.25);border-radius:var(--radius);padding:14px;text-align:center;color:var(--accent);font-weight:700;font-size:14px;text-decoration:none;margin-bottom:14px;">🔗 פתח לממש באתר</a>`:'';
-  const notesHtml=v.notes?`<div class="form-section" style="margin-bottom:14px;"><div class="form-section-title">📝 הערות</div><p style="font-size:14px;color:var(--text2);line-height:1.6;">${v.notes}</p></div>`:'';
-  const badgeHtml=b.cls
-    ?`<span class="expiry-badge ${b.cls}">${b.label}</span>`
-    :`<span class="expiry-badge" style="color:${b.color};background:${b.bg};border:1px solid ${b.border};">${b.label}</span>`;
-  const daysLeftHtml=v.expiryDate&&!v.used&&daysUntil(v.expiryDate)>0
-    ?`<div class="info-cell" style="grid-column:1/-1;"><div class="info-cell-label">ימים שנותרו</div><div class="info-cell-value" style="font-size:22px;color:${b.color};">${daysUntil(v.expiryDate)} ימים</div></div>`:'';
+  document.getElementById('detail-title').textContent=v.title||v.code||'שובר';
+  document.getElementById('detail-merchant').textContent=v.merchant||'';
+  document.getElementById('detail-merchant').style.display=v.merchant?'block':'none';
 
-  document.getElementById('detail-content').innerHTML=`
-    <div class="detail-hero">
-      ${imgHtml}
-      <div class="detail-merchant-row">
-        <div class="detail-cat-dot" style="background:${cat.color};"></div>
-        <span class="detail-merchant">${v.merchant||v.category} · ${cat.emoji}</span>
-      </div>
-      ${v.nickname?`<div class="detail-nickname">"${v.nickname}"</div>`:''}
-      <div class="detail-title">${v.title||v.code||'שובר'}</div>
-      ${v.value?`<div class="detail-value-block"><div class="detail-value-label">שווי השובר</div><div class="detail-value ${cat.grad}">${v.value}</div></div>`:''}
-      ${badgeHtml}
-    </div>
+  const img=document.getElementById('detail-img');
+  if(v.image){img.src=v.image;img.style.display='block';}else{img.style.display='none';}
 
-    ${v.code?`<div class="code-block">
-      <div class="code-label">קוד מימוש</div>
-      <div class="code-value">${v.code}</div>
-      <button class="copy-code-btn" id="copy-detail-code">📋 העתק קוד</button>
-    </div>`:''}
+  const d=daysUntil(v.expiryDate);
+  let badges='';
+  if(v.category)badges+=`<div class="detail-badge cat">${v.category}</div>`;
+  if(v.expiryDate&&!v.used){
+    if(d<=0)badges+=`<div class="detail-badge exp expired">⏱ פג תוקף</div>`;
+    else if(d<=settings.alertDays)badges+=`<div class="detail-badge exp soon">⏰ ${d} ימים</div>`;
+    else badges+=`<div class="detail-badge exp">📅 ${d} ימים</div>`;
+  }
+  if(v.used)badges+=`<div class="detail-badge exp expired">✓ ממוש</div>`;
+  document.getElementById('detail-badges').innerHTML=badges;
 
-    ${linkHtml}
+  const cs=document.getElementById('detail-code-section');
+  if(v.code){
+    cs.style.display='block';
+    document.getElementById('detail-code').textContent=v.code;
+  }else{cs.style.display='none';}
 
-    <div class="detail-info-grid">
-      <div class="info-cell"><div class="info-cell-label">תאריך תפוגה</div><div class="info-cell-value">${fmtDate(v.expiryDate)}</div></div>
-      <div class="info-cell"><div class="info-cell-label">נוסף</div><div class="info-cell-value">${fmtDate(v.createdAt)}</div></div>
-      ${daysLeftHtml}
-    </div>
+  let infoHTML='';
+  if(v.nickname)infoHTML+=`<div class="info-row"><span class="info-icon">✨</span><div class="info-content"><div class="info-label">כינוי</div><div class="info-value">${v.nickname}</div></div></div>`;
+  if(v.value)infoHTML+=`<div class="info-row"><span class="info-icon">💰</span><div class="info-content"><div class="info-label">שווי</div><div class="info-value">${v.value}</div></div></div>`;
+  if(v.expiryDate)infoHTML+=`<div class="info-row"><span class="info-icon">📅</span><div class="info-content"><div class="info-label">תוקף</div><div class="info-value">${new Date(v.expiryDate).toLocaleDateString('he-IL')}</div></div></div>`;
+  if(v.link)infoHTML+=`<a href="${v.link}" target="_blank" rel="noopener" class="link-btn-detail"><span class="info-icon">🔗</span><div class="info-content"><div class="info-label">קישור</div><div class="info-value">${v.link}</div></div></a>`;
+  if(v.notes)infoHTML+=`<div class="info-row"><span class="info-icon">📝</span><div class="info-content"><div class="info-label">הערות</div><div class="info-value">${v.notes}</div></div></div>`;
+  if(v.createdAt)infoHTML+=`<div class="info-row"><span class="info-icon">📆</span><div class="info-content"><div class="info-label">נוסף ב</div><div class="info-value">${new Date(v.createdAt).toLocaleDateString('he-IL')}</div></div></div>`;
+  document.getElementById('detail-info-grid').innerHTML=infoHTML;
 
-    ${tagsHtml}${notesHtml}
+  const ts=document.getElementById('detail-tags-section');
+  if(v.tags&&v.tags.length){
+    ts.style.display='block';
+    document.getElementById('detail-tags').innerHTML=v.tags.map(t=>`<div class="tag-pill">${t}</div>`).join('');
+  }else{ts.style.display='none';}
 
-    <div class="action-buttons">
-      <button class="action-btn ${v.used?'undo':'primary'}" id="toggle-used-btn">${v.used?'↩ בטל מימוש':'✅ סמן כמומש'}</button>
-      <button class="action-btn edit icon-btn" id="edit-btn" title="ערוך שובר">✏️</button>
-      <button class="action-btn danger icon-btn" id="delete-detail-btn" title="מחק שובר">🗑</button>
-    </div>
-  `;
+  document.getElementById('detail-toggle-btn').innerHTML=v.used?'↩️ בטל מימוש':'✓ סמן כממוש';
+  document.getElementById('detail-toggle-btn').onclick=()=>{toggleUsed(id);openDetail(id);};
 
-  document.getElementById('copy-detail-code')?.addEventListener('click',function(){
-    copyCode(v.code);this.textContent='✓ הועתק!';this.classList.add('copied');
-    setTimeout(()=>{this.textContent='📋 העתק קוד';this.classList.remove('copied');},2000);
-  });
+  document.getElementById('detail-edit-btn').onclick=()=>openEditMode(id);
+  document.getElementById('detail-delete-btn').onclick=()=>{
+    if(confirm(`למחוק את "${v.title||v.code}"?`)){vouchers=vouchers.filter(x=>x.id!==id);save();renderHome();showScreen('home-screen');toast('🗑 השובר נמחק');}
+  };
 
-  // Link button — stop propagation so detail screen doesn't interfere
-  document.querySelector('#detail-content a[href]')?.addEventListener('click',e=>{
-    e.stopPropagation();
-    // ensure it opens even if default was prevented
-    const href=e.currentTarget.href;
-    if(href) window.open(href,'_blank','noopener,noreferrer');
-    e.preventDefault();
-  });
-  document.getElementById('toggle-used-btn').addEventListener('click',()=>{
-    vouchers=vouchers.map(x=>x.id===id?{...x,used:!x.used}:x);
-    save();renderHome();openDetail(id);
-    toast(vouchers.find(x=>x.id===id).used?'✅ סומן כמומש':'↩ בוטל המימוש');
-  });
-  document.getElementById('edit-btn').addEventListener('click',()=>openEdit(id));
-  document.getElementById('delete-detail-btn').addEventListener('click',()=>{
-    if(confirm(`למחוק את "${v.title||v.code||'השובר'}"?`)){
-      vouchers=vouchers.filter(x=>x.id!==id);save();renderHome();showScreen('home-screen');toast('🗑 השובר נמחק');
-    }
-  });
+  document.getElementById('detail-code-box').onclick=()=>{
+    if(v.code){navigator.clipboard.writeText(v.code).then(()=>toast('📋 הקוד הועתק!'));}
+  };
+
+  document.getElementById('detail-share-btn').onclick=()=>{
+    const text=`${v.title||'שובר'}\nקוד: ${v.code||'אין'}\n${v.link?'קישור: '+v.link:''}`;
+    if(navigator.share){navigator.share({title:v.title||'שובר',text:text}).catch(()=>{});}
+    else{navigator.clipboard.writeText(text).then(()=>toast('📋 הועתק ללוח!'));}
+  };
 
   showScreen('detail-screen');
 };
 
-// ===== OPEN EDIT =====
-const openEdit=id=>{
-  const v=vouchers.find(x=>x.id===id);if(!v)return;
+const openEditMode=id=>{
+  const v=vouchers.find(x=>x.id===id);
+  if(!v)return;
   editingId=id;
-  document.getElementById('add-screen-title').textContent='עריכת שובר';
-  document.getElementById('submit-btn').textContent='💾 שמור שינויים';
-
-  // Fill form
-  document.getElementById('f-code').value=v.code||'';
-  document.getElementById('f-link').value=v.link||'';
   document.getElementById('f-title').value=v.title||'';
   document.getElementById('f-nickname').value=v.nickname||'';
   document.getElementById('f-merchant').value=v.merchant||'';
+  document.getElementById('f-code').value=v.code||'';
   document.getElementById('f-value').value=v.value||'';
   document.getElementById('f-expiry').value=v.expiryDate||'';
-  document.getElementById('f-tags').value=v.tags.join(', ');
+  document.getElementById('f-link').value=v.link||'';
+  document.getElementById('f-tags').value=v.tags?v.tags.join(', '):'';
   document.getElementById('f-notes').value=v.notes||'';
 
-  // Category
-  document.querySelectorAll('.cat-option').forEach(o=>{
-    o.classList.toggle('selected',o.dataset.cat===v.category);
-  });
+  document.querySelectorAll('.cat-option').forEach(o=>o.classList.remove('selected'));
+  const co=document.querySelector(`[data-cat="${v.category}"]`);
+  if(co)co.classList.add('selected');else document.querySelector('[data-cat="אחר"]')?.classList.add('selected');
 
-  // Image
-  pendingImage=v.image||'';
-  const preview=document.getElementById('img-preview');
-  const rmBtn=document.getElementById('img-remove');
-  if(pendingImage){preview.src=pendingImage;preview.classList.add('show');rmBtn.classList.add('show');}
-  else{preview.classList.remove('show');rmBtn.classList.remove('show');}
+  if(v.image){
+    pendingImage=v.image;
+    document.getElementById('img-preview').src=v.image;
+    document.getElementById('img-preview').classList.add('show');
+    document.getElementById('img-remove').classList.add('show');
+  }else{
+    pendingImage='';
+    document.getElementById('img-preview').classList.remove('show');
+    document.getElementById('img-remove').classList.remove('show');
+  }
 
-  // Enable submit
+  document.getElementById('submit-btn').textContent='💾 שמור שינויים';
+  document.getElementById('add-screen-title').textContent='עריכת שובר';
   document.getElementById('submit-btn').disabled=false;
-  checkValid();
-
-  document.getElementById('add-form-scroll').scrollTop=0;
   showScreen('add-screen');
 };
 
-// ===== ADD FORM INIT =====
-// checkValid at module scope so openEdit can call it too
+// ===== ADD FORM =====
 const checkValid=()=>{
-  const t=document.getElementById('f-title').value.trim();
-  const c=document.getElementById('f-code').value.trim();
-  document.getElementById('submit-btn').disabled=!(t||c||pendingImage);
+  const title=document.getElementById('f-title').value.trim();
+  const code=document.getElementById('f-code').value.trim();
+  document.getElementById('submit-btn').disabled=!(title||code);
 };
 
 const initAdd=()=>{
@@ -1092,7 +1248,27 @@ const renderSettings=()=>{
   document.getElementById('expired-count-sub').textContent=expired?`${expired} שובר/ים פגי תוקף`:'אין שוברים פגי תוקף';
 };
 
-document.getElementById('notif-toggle').addEventListener('click',function(){settings.notif=!settings.notif;this.className=`toggle ${settings.notif?'on':''}`;save();renderHome();});
+document.getElementById('notif-toggle').addEventListener('click',function(){
+  if(!settings.notif){
+    requestNotificationPermission().then(()=>{
+      if(notificationPermission==='granted'){
+        settings.notif=true;
+        this.className='toggle on';
+        save();
+        renderHome();
+        checkAndNotify();
+      }else{
+        toast('❌ יש לאשר התראות בהגדרות הדפדפן');
+      }
+    });
+  }else{
+    settings.notif=false;
+    this.className='toggle';
+    save();
+    renderHome();
+  }
+});
+
 document.getElementById('days-input').addEventListener('input',function(){const v=parseInt(this.value);if(v>=1){settings.alertDays=v;save();renderHome();}});
 document.getElementById('auto-del-used-toggle').addEventListener('click',function(){settings.autoDelUsed=!settings.autoDelUsed;this.className=`toggle ${settings.autoDelUsed?'on':''}`;save();});
 document.getElementById('auto-del-expired-toggle').addEventListener('click',function(){settings.autoDelExpired=!settings.autoDelExpired;this.className=`toggle ${settings.autoDelExpired?'on':''}`;save();});
@@ -1119,7 +1295,6 @@ document.querySelectorAll('[data-screen]').forEach(el=>{
 
 const openAdd=()=>{resetForm();document.getElementById('add-form-scroll').scrollTop=0;showScreen('add-screen');};
 document.getElementById('nav-add-btn').addEventListener('click',openAdd);
-document.getElementById('nav-add-btn-2').addEventListener('click',openAdd);
 document.getElementById('back-from-detail').addEventListener('click',()=>{showScreen('home-screen');renderHome();});
 document.getElementById('back-from-add').addEventListener('click',()=>{
   if(editingId!==null){const id=editingId;resetForm();openDetail(id);}
@@ -1142,6 +1317,12 @@ document.getElementById('install-dismiss').addEventListener('click',()=>document
 autoClean();
 initAdd();
 renderHome();
+
+// Add empty state button listener after first render
+setTimeout(()=>{
+  const btn2=document.getElementById('nav-add-btn-2');
+  if(btn2)btn2.addEventListener('click',openAdd);
+},100);
 </script>
 </body>
 </html>
