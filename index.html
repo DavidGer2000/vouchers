@@ -611,7 +611,7 @@ html,body{
     <div class="settings-section">
       <div class="settings-title">🔔 התראות תפוגה</div>
       <div class="settings-row">
-        <div><div class="settings-row-label">התראות פעילות</div><div class="settings-row-sub">הצג באנר שוברים שעומדים לפוג</div></div>
+        <div><div class="settings-row-label">התראות פעילות</div><div class="settings-row-sub">שלח התראות על שוברים שעומדים לפוג</div></div>
         <div class="toggle on" id="notif-toggle"></div>
       </div>
       <div class="settings-row">
@@ -681,8 +681,8 @@ const SAMPLE=[
   {id:6, title:"כניסה לכושר",      nickname:"חודש נסיון 💪",      merchant:"Holmes Place", category:"ספורט", code:"HP-TRIAL-30",   value:"₪150",expiryDate:"2026-02-25",link:"",notes:"",image:"",used:false,tags:["בריאות"],    createdAt:"2026-01-10"},
 ];
 
-let vouchers = JSON.parse(localStorage.getItem('vch_v7'))||SAMPLE;
-let settings = JSON.parse(localStorage.getItem('set_v7'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
+let vouchers = JSON.parse(localStorage.getItem('vch_v8'))||SAMPLE;
+let settings = JSON.parse(localStorage.getItem('set_v8'))||{alertDays:7,notif:true,autoDelUsed:false,autoDelExpired:false};
 // Defaults: show unused active, sorted by expiry
 let activeCat="הכל";
 let filter="unused";   // default: show only active unused
@@ -690,10 +690,11 @@ let search="";
 let sortMode=0;        // 0=expiry asc
 let pendingImage="";
 let editingId=null;    // null=add mode, number=edit mode
+let notificationPermission='default';
 
 const save=()=>{
-  localStorage.setItem('vch_v7',JSON.stringify(vouchers));
-  localStorage.setItem('set_v7',JSON.stringify(settings));
+  localStorage.setItem('vch_v8',JSON.stringify(vouchers));
+  localStorage.setItem('set_v8',JSON.stringify(settings));
 };
 
 const daysUntil=d=>{
@@ -704,6 +705,44 @@ const daysUntil=d=>{
 const fmtDate=d=>{
   if(!d)return'—';
   return new Date(d).toLocaleDateString('he-IL',{day:'numeric',month:'short',year:'numeric'});
+};
+
+// ===== NOTIFICATIONS =====
+const requestNotificationPermission=async()=>{
+  if(!('Notification' in window))return;
+  if(Notification.permission==='granted'){notificationPermission='granted';return;}
+  if(Notification.permission==='denied'){notificationPermission='denied';return;}
+  const p=await Notification.requestPermission();
+  notificationPermission=p;
+  if(p==='granted')toast('✅ התראות הופעלו בהצלחה!');
+};
+
+const sendNotification=(title,body)=>{
+  if(notificationPermission!=='granted')return;
+  if('serviceWorker' in navigator && 'PushManager' in window){
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title,{
+        body:body,
+        icon:'icon.svg',
+        badge:'icon.svg',
+        vibrate:[200,100,200],
+        tag:'voucher-expiry',
+        requireInteraction:true
+      });
+    });
+  }else{
+    new Notification(title,{body:body,icon:'icon.svg'});
+  }
+};
+
+const checkAndNotify=()=>{
+  if(!settings.notif||notificationPermission!=='granted')return;
+  const expiring=vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=settings.alertDays&&daysUntil(v.expiryDate)>0);
+  if(expiring.length>0){
+    const v=expiring[0];
+    const d=daysUntil(v.expiryDate);
+    sendNotification('⏰ שובר עומד לפוג!',`${v.title} פג תוקף בעוד ${d} ימים`);
+  }
 };
 
 // ===== AUTO-DELETE ON STARTUP =====
@@ -1172,7 +1211,19 @@ const renderSettings=()=>{
   document.getElementById('expired-count-sub').textContent=expired?`${expired} שובר/ים פגי תוקף`:'אין שוברים פגי תוקף';
 };
 
-document.getElementById('notif-toggle').addEventListener('click',function(){settings.notif=!settings.notif;this.className=`toggle ${settings.notif?'on':''}`;save();renderHome();});
+document.getElementById('notif-toggle').addEventListener('click',async function(){
+  if(!settings.notif){
+    await requestNotificationPermission();
+    if(notificationPermission!=='granted'){
+      toast('❌ התראות לא הופעלו - בדוק הרשאות');
+      return;
+    }
+  }
+  settings.notif=!settings.notif;
+  this.className=`toggle ${settings.notif?'on':''}`;
+  save();
+  renderHome();
+});
 document.getElementById('days-input').addEventListener('input',function(){const v=parseInt(this.value);if(v>=1){settings.alertDays=v;save();renderHome();}});
 document.getElementById('auto-del-used-toggle').addEventListener('click',function(){settings.autoDelUsed=!settings.autoDelUsed;this.className=`toggle ${settings.autoDelUsed?'on':''}`;save();});
 document.getElementById('auto-del-expired-toggle').addEventListener('click',function(){settings.autoDelExpired=!settings.autoDelExpired;this.className=`toggle ${settings.autoDelExpired?'on':''}`;save();});
@@ -1221,6 +1272,12 @@ document.getElementById('install-dismiss').addEventListener('click',()=>document
 autoClean();
 initAdd();
 renderHome();
+
+// Check notifications on load and every hour
+if(settings.notif){
+  requestNotificationPermission().then(()=>checkAndNotify());
+  setInterval(checkAndNotify,3600000);
+}
 </script>
 </body>
 </html>
