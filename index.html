@@ -487,8 +487,9 @@ html,body{
     <div class="filter-row" id="filter-row">
       <div class="filter-pill" data-filter="all">הכל</div>
       <div class="filter-pill active" data-filter="unused">פעילים</div>
-      <div class="filter-pill" data-filter="used">ממושים</div>
       <div class="filter-pill" data-filter="expiring">פגים בקרוב</div>
+      <div class="filter-pill" data-filter="used">ממושים</div>
+      <div class="filter-pill" data-filter="expired">פגי תוקף</div>
     </div>
 
     <div id="alert-container"></div>
@@ -510,7 +511,7 @@ html,body{
     <span id="detail-topbar-title" style="flex:1;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
   <div class="inner-scroll" id="detail-content" style="padding-bottom:calc(var(--safe-b)+80px);"></div>
-  <div class="sticky-submit">
+  <div class="sticky-submit" id="detail-bottom">
     <button class="back-btn" id="back-from-detail" style="margin-left:auto;">חזור ←</button>
   </div>
 </div>
@@ -600,7 +601,7 @@ html,body{
   <div class="sub-topbar" style="border-bottom:1px solid var(--border);">
     <span class="app-title" style="font-size:22px;">⚙️ הגדרות</span>
   </div>
-  <div class="inner-scroll" style="padding-bottom:calc(var(--nav-h) + var(--safe-b) + 80px);">
+  <div class="inner-scroll" style="padding-bottom:calc(var(--nav-h) + var(--safe-b) + 16px);">
 
     <div class="settings-section">
       <div class="settings-title">📊 סטטיסטיקות</div>
@@ -650,12 +651,8 @@ html,body{
     </div>
   </div>
 
-  <div class="sticky-submit">
-    <button class="back-btn" id="back-from-settings" style="margin-left:auto;">חזור ←</button>
-  </div>
-
   <nav class="bottom-nav">
-    <div class="nav-item" data-screen="home-screen"><span class="nav-icon">🎟</span><span class="nav-label">שוברים</span></div>
+    <div class="nav-item" id="back-from-settings"><span class="nav-icon">←</span><span class="nav-label">חזור</span></div>
     <div class="nav-add" id="nav-add-btn-2"><span class="nav-icon">＋</span><span class="nav-label">הוסף</span></div>
     <div class="nav-item active" data-screen="settings-screen"><span class="nav-icon">⚙️</span><span class="nav-label">הגדרות</span></div>
   </nav>
@@ -731,13 +728,21 @@ const toast=msg=>{
 
 // ===== POPUP =====
 let currentPopupId=null;
+let currentCard=null;
 const showPopup=id=>{
   currentPopupId=id;
+  currentCard = document.querySelector(`.voucher-card[data-id="${id}"]`);
   document.getElementById('popup').classList.add('show');
 };
 const hidePopup=()=>{
+  if(currentCard){
+    currentCard.style.transition='transform 0.2s';
+    currentCard.style.transform='translateX(0)';
+    currentCard.classList.remove('swiping');
+  }
   document.getElementById('popup').classList.remove('show');
   currentPopupId=null;
+  currentCard=null;
 };
 document.getElementById('popup-delete').addEventListener('click',()=>{
   if(currentPopupId){
@@ -770,30 +775,7 @@ const renderHome=()=>{
   const activeCount=vouchers.filter(v=>!v.used&&daysUntil(v.expiryDate)>0).length;
   document.getElementById('active-count').textContent=activeCount;
 
-  // Alert
-  const expiring=vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=settings.alertDays&&daysUntil(v.expiryDate)>0);
-  const expired= vouchers.filter(v=>!v.used&&v.expiryDate&&daysUntil(v.expiryDate)<=0);
-  const alertEl=document.getElementById('alert-container');
-  if(settings.notif&&(expiring.length||expired.length)){
-    alertEl.innerHTML=`<div class="alert-banner">
-      <span style="font-size:20px;flex-shrink:0;">🔔</span>
-      <div style="flex:1;">
-        ${expired.length?`<div style="font-size:13px;font-weight:700;color:#FF6B9D;">${expired.length} שובר/ים פגי תוקף!</div>`:''}
-        ${expiring.length?`<div style="font-size:12px;color:rgba(255,255,255,0.5);">${expiring.length} שובר/ים יפוגו תוך ${settings.alertDays} ימים</div>`:''}
-      </div>
-      <span class="alert-close" id="alert-close">✕</span>
-    </div>`;
-    document.getElementById('alert-close')?.addEventListener('click',()=>alertEl.innerHTML='');
-
-    // Show device notification
-    if('Notification' in window && Notification.permission === 'granted'){
-      const title = expired.length ? `${expired.length} שוברים פגו!` : `${expiring.length} שוברים יפוגו בקרוב`;
-      const body = expired.length ? 'יש שוברים שפג תוקפם' : `שוברים יפוגו תוך ${settings.alertDays} ימים`;
-      new Notification(title, {body: body, icon: './icon.svg'});
-    } else if('Notification' in window && Notification.permission === 'default'){
-      Notification.requestPermission();
-    }
-  } else { alertEl.innerHTML=''; }
+  // Alert - removed, notifications on device and card are enough
 
   // Chips
   const cr=document.getElementById('chips-row');
@@ -818,6 +800,7 @@ const renderHome=()=>{
     if(activeCat!=='הכל'&&v.category!==activeCat) return false;
     if(filter==='unused'&&v.used) return false;
     if(filter==='used'&&!v.used) return false;
+    if(filter==='expired'&&(v.used || !v.expiryDate || daysUntil(v.expiryDate)>0)) return false;
     if(filter==='expiring'&&(v.used||!v.expiryDate||daysUntil(v.expiryDate)>settings.alertDays||daysUntil(v.expiryDate)<=0)) return false;
     if(search){
       const q=search.toLowerCase();
@@ -884,7 +867,7 @@ const renderHome=()=>{
     card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;cx=sx;didSwipe=false;card.style.transition='';},{passive:true});
     card.addEventListener('touchmove',e=>{
       cx=e.touches[0].clientX;const d=sx-cx;
-      if(Math.abs(d)>12){didSwipe=true;card.classList.add('swiping');card.style.transform=`translateX(${Math.max(Math.min(d,90),-90)}px)`;}
+      if(Math.abs(d)>12){didSwipe=true;card.classList.add('swiping');card.style.transform=`translateX(${Math.max(Math.min(-d,90),-90)}px)`;}
     },{passive:true});
     card.addEventListener('touchend',()=>{
       card.classList.remove('swiping');
@@ -987,13 +970,17 @@ const openDetail=id=>{
     </div>
 
     ${tagsHtml}${notesHtml}
-
-    <div class="action-buttons">
-      <button class="action-btn ${v.used?'undo':'primary'}" id="toggle-used-btn">${v.used?'↩ בטל מימוש':'✅ סמן כמומש'}</button>
-      <button class="action-btn edit icon-btn" id="edit-btn" title="ערוך שובר">✏️</button>
-      <button class="action-btn danger icon-btn" id="delete-detail-btn" title="מחק שובר">🗑</button>
-    </div>
   `;
+
+  // Set bottom buttons
+  document.getElementById('detail-bottom').innerHTML = `
+    <button class="back-btn" id="back-from-detail">חזור ←</button>
+    <button class="action-btn ${v.used?'undo':'primary'}" id="toggle-used-btn">${v.used?'↩ בטל מימוש':'✅ סמן כמומש'}</button>
+    <button class="action-btn edit icon-btn" id="edit-btn" title="ערוך שובר">✏️</button>
+    <button class="action-btn danger icon-btn" id="delete-detail-btn" title="מחק שובר">🗑</button>
+  `;
+
+  document.getElementById('back-from-detail').addEventListener('click',()=>{showScreen('home-screen');renderHome();});
 
   document.getElementById('copy-detail-code')?.addEventListener('click',function(){
     copyCode(v.code);this.textContent='✓ הועתק!';this.classList.add('copied');
@@ -1213,10 +1200,8 @@ document.querySelectorAll('[data-screen]').forEach(el=>{
 const openAdd=()=>{resetForm();document.getElementById('add-form-scroll').scrollTop=0;showScreen('add-screen');};
 document.getElementById('nav-add-btn').addEventListener('click',openAdd);
 document.getElementById('nav-add-btn-2').addEventListener('click',openAdd);
-document.getElementById('back-from-detail').addEventListener('click',()=>{showScreen('home-screen');renderHome();});
 document.getElementById('back-from-add').addEventListener('click',()=>{
-  if(editingId!==null){const id=editingId;resetForm();openDetail(id);}
-  else{resetForm();showScreen('home-screen');}
+  resetForm();showScreen('home-screen');renderHome();
 });
 document.getElementById('back-from-settings').addEventListener('click',()=>{showScreen('home-screen');renderHome();});
 document.getElementById('sort-toggle').addEventListener('click',()=>{sortMode=(sortMode+1)%2;renderHome();});
