@@ -119,13 +119,13 @@ html,body{
 
 /* ===================== CARDS ===================== */
 .card-wrapper{position:relative;margin-bottom:10px;overflow:hidden;border-radius:20px;}
-.card-delete-bg{
+.card-used-bg{
   position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(90deg,#FF4757,#FF6B6B);
+  background:linear-gradient(90deg,#00D4AA,#00B894);
   display:flex;align-items:center;justify-content:flex-start;
   padding-left:24px;border-radius:20px;pointer-events:none;
 }
-.card-delete-bg span{font-size:26px;}
+.card-used-bg span{font-size:26px;}
 
 .voucher-card{
   background:var(--surface);border:1.5px solid var(--border);
@@ -137,8 +137,11 @@ html,body{
 .voucher-card:active{background:var(--surface2);}
 .voucher-card.has-thumb{padding-right:68px;}
 
-/* USED card — grey, no red */
-.voucher-card.used{ opacity:0.55; filter:grayscale(60%); }
+/* ACTIVE card — green border */
+.voucher-card.active{ border-color: rgba(0,212,170,0.4); }
+
+/* INACTIVE card — red border */
+.voucher-card.inactive{ border-color: rgba(255,71,87,0.4); }
 
 .card-stripe{position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 20px 20px 0;}
 
@@ -153,7 +156,7 @@ html,body{
   font-size:15px;cursor:pointer;transition:all 0.15s;opacity:0.45;background:none;
 }
 .card-action-btn:active{transform:scale(0.88);}
-.card-action-btn.edit-btn{border-color:rgba(124,111,255,0.35);color:#9C8FFF;}
+.card-action-btn.edit-btn{border-color:rgba(124,111,255,0.5);color:#7C6FFF;background:linear-gradient(135deg,rgba(124,111,255,0.1),rgba(124,111,255,0.2));}
 .card-action-btn.edit-btn:hover{opacity:1;background:rgba(124,111,255,0.15);}
 .card-action-btn.del-btn{border-color:rgba(255,71,87,0.35);color:#FF4757;}
 .card-action-btn.del-btn:hover{opacity:1;background:rgba(255,71,87,0.12);}
@@ -300,6 +303,7 @@ html,body{
   flex-shrink:0;padding:10px 20px;
   padding-bottom:calc(var(--safe-b)+10px);
   background:var(--bg);border-top:1px solid var(--border);z-index:10;
+  display:flex;gap:10px;
 }
 .form-section{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;}
 .form-section:last-child{margin-bottom:0;}
@@ -389,6 +393,29 @@ html,body{
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+/* ===================== POPUP ===================== */
+.popup-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.2s;z-index:1000;
+}
+.popup-overlay.show{opacity:1;pointer-events:auto;}
+.popup-content{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:24px;padding:24px;width:90%;max-width:320px;text-align:center;
+}
+.popup-title{font-size:18px;font-weight:700;margin-bottom:20px;}
+.popup-buttons{display:flex;flex-direction:column;gap:12px;}
+.popup-btn{
+  width:100%;padding:14px;border-radius:var(--radius);border:none;
+  font-family:'Heebo';font-size:15px;font-weight:600;cursor:pointer;
+  transition:all 0.15s;
+}
+.popup-btn.delete-btn{background:rgba(255,71,87,0.12);border:1px solid rgba(255,71,87,0.25);color:#FF4757;}
+.popup-btn.undo-btn{background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:#00D4AA;}
+.popup-btn.cancel-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+
 /* INSTALL BANNER */
 #install-banner{
   display:none;margin:8px 20px;flex-shrink:0;
@@ -416,6 +443,18 @@ html,body{
 <body>
 <div id="app">
 <div id="toast"></div>
+
+<!-- POPUP -->
+<div id="popup" class="popup-overlay">
+  <div class="popup-content">
+    <div class="popup-title">בחר פעולה</div>
+    <div class="popup-buttons">
+      <button class="popup-btn delete-btn" id="popup-delete">🗑 מחק שובר</button>
+      <button class="popup-btn undo-btn" id="popup-undo">↩ בטל מימוש</button>
+      <button class="popup-btn cancel-btn" id="popup-cancel">✕ ביטול</button>
+    </div>
+  </div>
+</div>
 
 <!-- ============ HOME SCREEN ============ -->
 <div id="home-screen" class="screen active">
@@ -468,29 +507,34 @@ html,body{
 <!-- ============ DETAIL SCREEN ============ -->
 <div id="detail-screen" class="screen">
   <div class="sub-topbar">
-    <button class="back-btn" id="back-from-detail">← חזור</button>
     <span id="detail-topbar-title" style="flex:1;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
-  <div class="inner-scroll" id="detail-content" style="padding-bottom:calc(var(--safe-b)+20px);"></div>
+  <div class="inner-scroll" id="detail-content" style="padding-bottom:calc(var(--safe-b)+80px);"></div>
+  <div class="sticky-submit">
+    <button class="back-btn" id="back-from-detail" style="margin-left:auto;">חזור ←</button>
+  </div>
 </div>
 
 <!-- ============ ADD / EDIT SCREEN ============ -->
 <div id="add-screen" class="screen">
   <div class="sub-topbar">
-    <button class="back-btn" id="back-from-add">✕</button>
     <span class="sub-topbar-title" id="add-screen-title">שובר חדש</span>
   </div>
   <div class="inner-scroll" id="add-form-scroll">
 
     <div class="form-section">
-      <div class="form-section-title">💎 קוד השובר</div>
+      <div class="form-section-title">� פרטי השובר</div>
+      <div class="form-field">
+        <label class="form-label">שם השובר <span style="color:var(--accent2);font-size:10px;">• חובה אם אין קוד או תמונה</span></label>
+        <input class="form-input" id="f-title" placeholder="ארוחת ערב זוגית" type="text" autocomplete="off">
+      </div>
       <div class="form-field">
         <label class="form-label">קוד מימוש <span style="color:var(--accent2);font-size:10px;">• חובה אם אין שם או תמונה</span></label>
         <input class="form-input" id="f-code" placeholder="ABCD-1234" type="text" autocomplete="off" style="font-family:monospace;letter-spacing:2px;font-size:18px;direction:ltr;text-align:center;">
       </div>
-      <div class="form-field" style="margin-bottom:0">
-        <label class="form-label">קישור לאתר (אופציונלי)</label>
-        <input class="form-input" id="f-link" placeholder="https://..." type="url">
+      <div class="form-field">
+        <label class="form-label">תאריך תפוגה (אופציונלי)</label>
+        <input class="form-input" id="f-expiry" type="date" style="color-scheme:dark;">
       </div>
     </div>
 
@@ -507,11 +551,23 @@ html,body{
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">📋 פרטי השובר</div>
+      <div class="form-section-title">💎 ערך וקישור</div>
       <div class="form-field">
-        <label class="form-label">שם השובר <span style="color:var(--accent2);font-size:10px;">• חובה אם אין קוד או תמונה</span></label>
-        <input class="form-input" id="f-title" placeholder="ארוחת ערב זוגית" type="text" autocomplete="off">
+        <label class="form-label">שווי (אופציונלי)</label>
+        <input class="form-input" id="f-value" placeholder="₪200 / 10% / 2 כרטיסים" type="text" autocomplete="off">
       </div>
+      <div class="form-field">
+        <label class="form-label">קישור לאתר (אופציונלי)</label>
+        <input class="form-input" id="f-link" placeholder="https://..." type="url">
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <label class="form-label">הערות</label>
+        <textarea class="form-input" id="f-notes" placeholder="פרטים נוספים..." rows="2" style="resize:none;"></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🏷 פרטים נוספים</div>
       <div class="form-field">
         <label class="form-label">כינוי אישי (אופציונלי)</label>
         <input class="form-input" id="f-nickname" placeholder='חגיגת יום הולדת 🎂' type="text" autocomplete="off">
@@ -521,8 +577,8 @@ html,body{
         <input class="form-input" id="f-merchant" placeholder="מסעדת נאפולי" type="text" autocomplete="off">
       </div>
       <div class="form-field" style="margin-bottom:0">
-        <label class="form-label">שווי (אופציונלי)</label>
-        <input class="form-input" id="f-value" placeholder="₪200 / 10% / 2 כרטיסים" type="text" autocomplete="off">
+        <label class="form-label">תגיות (מופרדות בפסיקים)</label>
+        <input class="form-input" id="f-tags" placeholder="רומנטי, זוגי, יום הולדת" type="text" autocomplete="off">
       </div>
     </div>
 
@@ -531,25 +587,10 @@ html,body{
       <div class="cat-grid" id="cat-grid"></div>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">📅 תוקף ותגיות</div>
-      <div class="form-field">
-        <label class="form-label">תאריך תפוגה (אופציונלי)</label>
-        <input class="form-input" id="f-expiry" type="date" style="color-scheme:dark;">
-      </div>
-      <div class="form-field">
-        <label class="form-label">תגיות (מופרדות בפסיקים)</label>
-        <input class="form-input" id="f-tags" placeholder="רומנטי, זוגי, יום הולדת" type="text" autocomplete="off">
-      </div>
-      <div class="form-field" style="margin-bottom:0">
-        <label class="form-label">הערות</label>
-        <textarea class="form-input" id="f-notes" placeholder="פרטים נוספים..." rows="2" style="resize:none;"></textarea>
-      </div>
-    </div>
-
     <div style="height:8px;"></div>
   </div>
   <div class="sticky-submit">
+    <button class="back-btn" id="back-from-add" style="margin-left:auto;">חזור ←</button>
     <button class="submit-btn" id="submit-btn" disabled>🎟 שמור שובר</button>
   </div>
 </div>
@@ -559,7 +600,7 @@ html,body{
   <div class="sub-topbar" style="border-bottom:1px solid var(--border);">
     <span class="app-title" style="font-size:22px;">⚙️ הגדרות</span>
   </div>
-  <div class="inner-scroll" style="padding-bottom:calc(var(--nav-h) + var(--safe-b) + 16px);">
+  <div class="inner-scroll" style="padding-bottom:calc(var(--nav-h) + var(--safe-b) + 80px);">
 
     <div class="settings-section">
       <div class="settings-title">📊 סטטיסטיקות</div>
@@ -607,6 +648,10 @@ html,body{
       <div style="font-size:14px;font-weight:700;margin-bottom:4px;">השוברים שלי</div>
       <div style="font-size:12px;color:var(--text2);">v4.0 — נבנה עם ❤️</div>
     </div>
+  </div>
+
+  <div class="sticky-submit">
+    <button class="back-btn" id="back-from-settings" style="margin-left:auto;">חזור ←</button>
   </div>
 
   <nav class="bottom-nav">
@@ -684,6 +729,32 @@ const toast=msg=>{
   clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);
 };
 
+// ===== POPUP =====
+let currentPopupId=null;
+const showPopup=id=>{
+  currentPopupId=id;
+  document.getElementById('popup').classList.add('show');
+};
+const hidePopup=()=>{
+  document.getElementById('popup').classList.remove('show');
+  currentPopupId=null;
+};
+document.getElementById('popup-delete').addEventListener('click',()=>{
+  if(currentPopupId){
+    vouchers=vouchers.filter(x=>x.id!==currentPopupId);
+    save();renderHome();toast('🗑 השובר נמחק');
+  }
+  hidePopup();
+});
+document.getElementById('popup-undo').addEventListener('click',()=>{
+  if(currentPopupId){
+    vouchers=vouchers.map(x=>x.id===currentPopupId?{...x,used:false}:x);
+    save();renderHome();toast('↩ בוטל המימוש');
+  }
+  hidePopup();
+});
+document.getElementById('popup-cancel').addEventListener('click',hidePopup);
+
 // ===== BADGE =====
 const badge=v=>{
   if(v.used) return{label:"✓ מומש",cls:"badge-used"};
@@ -713,6 +784,15 @@ const renderHome=()=>{
       <span class="alert-close" id="alert-close">✕</span>
     </div>`;
     document.getElementById('alert-close')?.addEventListener('click',()=>alertEl.innerHTML='');
+
+    // Show device notification
+    if('Notification' in window && Notification.permission === 'granted'){
+      const title = expired.length ? `${expired.length} שוברים פגו!` : `${expiring.length} שוברים יפוגו בקרוב`;
+      const body = expired.length ? 'יש שוברים שפג תוקפם' : `שוברים יפוגו תוך ${settings.alertDays} ימים`;
+      new Notification(title, {body: body, icon: './icon.svg'});
+    } else if('Notification' in window && Notification.permission === 'default'){
+      Notification.requestPermission();
+    }
   } else { alertEl.innerHTML=''; }
 
   // Chips
@@ -759,6 +839,7 @@ const renderHome=()=>{
 
   container.innerHTML=list.map(v=>{
     const cat=getCat(v.category),b=badge(v);
+    const isActive = !v.used && (!v.expiryDate || daysUntil(v.expiryDate)>0);
     const tagsHtml=v.tags.length?`<div class="tags-row">${v.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>`:'';
     const thumbHtml=v.image?`<img class="card-thumb" src="${v.image}" alt="">`:'';
     // Badge HTML — used gets its own class, others get inline style
@@ -767,9 +848,8 @@ const renderHome=()=>{
       : `<span class="expiry-badge" style="color:${b.color};background:${b.bg};border:1px solid ${b.border};">${b.label}</span>`;
     return `
       <div class="card-wrapper" data-id="${v.id}">
-        <div class="card-delete-bg"><span>🗑</span></div>
-        <div class="voucher-card ${v.used?'used':''} ${v.image?'has-thumb':''}" data-id="${v.id}">
-          <div class="card-stripe" style="background:${cat.color};"></div>
+        <div class="card-used-bg"><span>✅</span></div>
+        <div class="voucher-card ${isActive?'active':'inactive'} ${v.image?'has-thumb':''}" data-id="${v.id}">
           <div class="card-actions">
             <button class="card-action-btn edit-btn" data-id="${v.id}" title="ערוך">✏️</button>
             <button class="card-action-btn del-btn" data-id="${v.id}" title="מחק">🗑</button>
@@ -787,6 +867,7 @@ const renderHome=()=>{
           <div class="card-bottom">
             ${badgeHtml}
             ${v.code?`<button class="copy-btn-inline" data-code="${v.code}" onclick="event.stopPropagation();">${v.code}</button>`:''}
+            ${v.link?`<button class="copy-btn-inline" onclick="event.stopPropagation();window.open('${v.link}','_blank','noopener,noreferrer');" style="background:rgba(0,212,170,0.15);border-color:rgba(0,212,170,0.3);color:#00D4AA;">🔗 פתח</button>`:''}
           </div>
           ${tagsHtml}
         </div>
@@ -803,14 +884,25 @@ const renderHome=()=>{
     card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;cx=sx;didSwipe=false;card.style.transition='';},{passive:true});
     card.addEventListener('touchmove',e=>{
       cx=e.touches[0].clientX;const d=sx-cx;
-      if(d>12){didSwipe=true;card.classList.add('swiping');card.style.transform=`translateX(-${Math.min(d,90)}px)`;}
+      if(Math.abs(d)>12){didSwipe=true;card.classList.add('swiping');card.style.transform=`translateX(${Math.max(Math.min(d,90),-90)}px)`;}
     },{passive:true});
     card.addEventListener('touchend',()=>{
       card.classList.remove('swiping');
       const d=sx-cx;
+      const id=parseInt(card.dataset.id);
+      const v=vouchers.find(x=>x.id===id);
       if(didSwipe && d>70){
-        card.style.transition='transform 0.2s';card.style.transform='translateX(-110%)';
-        setTimeout(()=>{vouchers=vouchers.filter(x=>x.id!==parseInt(card.dataset.id));save();renderHome();toast('🗑 השובר נמחק');},200);
+        if(v && v.used){
+          // Show popup for used voucher
+          showPopup(id);
+        } else {
+          // Mark as used
+          vouchers=vouchers.map(x=>x.id===id?{...x,used:true}:x);
+          save();renderHome();toast('✅ סומן כמומש');
+        }
+      } else if(didSwipe && d<-70){
+        // Swipe right - open edit
+        openEdit(id);
       } else {
         card.style.transition='transform 0.2s';card.style.transform='translateX(0)';
       }
@@ -974,7 +1066,8 @@ const openEdit=id=>{
 const checkValid=()=>{
   const t=document.getElementById('f-title').value.trim();
   const c=document.getElementById('f-code').value.trim();
-  document.getElementById('submit-btn').disabled=!(t||c||pendingImage);
+  const i=pendingImage;
+  document.getElementById('submit-btn').disabled=!(t||c||i);
 };
 
 const initAdd=()=>{
@@ -1125,6 +1218,7 @@ document.getElementById('back-from-add').addEventListener('click',()=>{
   if(editingId!==null){const id=editingId;resetForm();openDetail(id);}
   else{resetForm();showScreen('home-screen');}
 });
+document.getElementById('back-from-settings').addEventListener('click',()=>{showScreen('home-screen');renderHome();});
 document.getElementById('sort-toggle').addEventListener('click',()=>{sortMode=(sortMode+1)%2;renderHome();});
 document.getElementById('search-input').addEventListener('input',e=>{search=e.target.value.trim();renderHome();});
 
